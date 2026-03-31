@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark" data-lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenClaw 完全新手指南</title>
+  <title>OpenClaw Complete Guide</title>
   <style>
+    /* ── THEME: DARK (default) ── */
     :root {
       --bg: #0f1117;
       --surface: #1a1d27;
@@ -18,7 +19,30 @@
       --warn: #fbbf24;
       --danger: #f87171;
       --code-bg: #0d1117;
+      --nav-bg: rgba(15,17,23,0.92);
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
+    /* ── THEME: LIGHT ── */
+    [data-theme="light"] {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --surface2: #eef1f8;
+      --border: #d1d9ee;
+      --accent: #5b4de8;
+      --accent2: #0ea5a0;
+      --text: #1a1d2e;
+      --text-dim: #5a6180;
+      --success: #16a34a;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --code-bg: #f0f3fa;
+      --nav-bg: rgba(244,246,251,0.92);
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    /* ── LANG SWITCHING ── */
+    [data-lang="en"] .lang-zh { display: none !important; }
+    [data-lang="zh"] .lang-en { display: none !important; }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -27,6 +51,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
       font-size: 16px;
       line-height: 1.7;
+      transition: background 0.25s, color 0.25s;
     }
 
     /* ── NAV ── */
@@ -34,37 +59,71 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: 60px;
-      background: rgba(15,17,23,0.92);
+      background: var(--nav-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      padding: 0 2rem;
+      padding: 0 1.5rem;
       z-index: 100;
-      gap: 2rem;
+      gap: 1.5rem;
     }
     .nav-logo {
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .nav-links {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.25rem;
       list-style: none;
       overflow-x: auto;
+      flex: 1;
     }
+    .nav-links::-webkit-scrollbar { display: none; }
     .nav-links a {
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       white-space: nowrap;
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--text); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--text); border-color: var(--accent); }
+    .nav-by {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      padding-left: 0.5rem;
+      border-left: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .nav-by strong {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
     /* ── LAYOUT ── */
     .wrapper {
@@ -75,87 +134,76 @@
       gap: 2rem;
     }
     aside {
-      width: 240px;
+      width: 230px;
       flex-shrink: 0;
       position: sticky;
       top: 80px;
       height: calc(100vh - 80px);
       overflow-y: auto;
     }
-    aside ul {
-      list-style: none;
-      padding: 0;
-    }
-    aside li { margin-bottom: 0.25rem; }
+    aside::-webkit-scrollbar { width: 3px; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    aside ul { list-style: none; }
+    aside li { margin-bottom: 0.2rem; }
     aside a {
       display: block;
-      padding: 0.4rem 0.75rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 6px;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.875rem;
+      font-size: 0.83rem;
       transition: all 0.15s;
     }
     aside a:hover { color: var(--text); background: var(--surface2); }
-    aside .section-title {
-      font-size: 0.7rem;
+    aside a.active { color: var(--accent); background: rgba(124,106,247,0.12); }
+    .sidebar-title {
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--text-dim);
       padding: 0.75rem 0.75rem 0.25rem;
-      font-weight: 600;
+      font-weight: 700;
     }
-    main {
-      flex: 1;
-      min-width: 0;
-    }
+    main { flex: 1; min-width: 0; }
 
     /* ── HERO ── */
     .hero {
       text-align: center;
-      padding: 4rem 2rem 3rem;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,106,247,0.15), transparent);
+      padding: 3.5rem 2rem 2.5rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,106,247,0.12), transparent);
       border-radius: 16px;
       margin-bottom: 3rem;
       border: 1px solid var(--border);
     }
-    .hero-emoji { font-size: 4rem; margin-bottom: 1rem; }
+    .hero-emoji { font-size: 3.5rem; margin-bottom: 0.75rem; }
     .hero h1 {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      background: linear-gradient(135deg, var(--text) 30%, var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     .hero p {
       color: var(--text-dim);
-      font-size: 1.15rem;
-      max-width: 600px;
-      margin: 0 auto 1.5rem;
+      font-size: 1.1rem;
+      max-width: 580px;
+      margin: 0 auto 1.25rem;
     }
-    .hero-tags {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .hero-tags { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
     .tag {
       background: var(--surface2);
       border: 1px solid var(--border);
-      padding: 0.25rem 0.75rem;
+      padding: 0.2rem 0.65rem;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-dim);
     }
 
     /* ── SECTIONS ── */
-    section {
-      margin-bottom: 4rem;
-      scroll-margin-top: 80px;
-    }
+    section { margin-bottom: 3.5rem; scroll-margin-top: 80px; }
     h2 {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
       font-weight: 700;
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
@@ -164,51 +212,35 @@
       align-items: center;
       gap: 0.5rem;
     }
-    h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 1.5rem 0 0.75rem;
-      color: var(--accent2);
-    }
-    h4 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 1rem 0 0.5rem;
-      color: var(--warn);
-    }
-    p { margin-bottom: 0.75rem; color: var(--text); }
+    h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.7rem; color: var(--accent2); }
+    h4 { font-size: 0.98rem; font-weight: 600; margin: 1rem 0 0.5rem; color: var(--warn); }
+    p { margin-bottom: 0.7rem; }
 
     /* ── CARDS ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.25rem;
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .card-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.1rem;
+      transition: background 0.25s, border-color 0.25s;
     }
     .card h4 { margin-top: 0; color: var(--text); }
     .card p { margin: 0; font-size: 0.9rem; color: var(--text-dim); }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
 
     /* ── STEPS ── */
-    .steps {
-      counter-reset: step;
-      list-style: none;
-      padding: 0;
-    }
+    .steps { counter-reset: step; list-style: none; padding: 0; }
     .steps li {
       counter-increment: step;
       display: grid;
-      grid-template-columns: 40px 1fr;
+      grid-template-columns: 38px 1fr;
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
@@ -217,197 +249,193 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 38px; height: 38px;
       background: linear-gradient(135deg, var(--accent), #5b52d8);
       border-radius: 50%;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       flex-shrink: 0;
       position: sticky;
       top: 90px;
     }
     .step-content { padding-top: 0.5rem; }
-    .step-content h4 { margin: 0 0 0.5rem; color: var(--text); font-size: 1.05rem; }
+    .step-content h4 { margin: 0 0 0.5rem; color: var(--text); font-size: 1rem; }
 
     /* ── CODE ── */
-    pre, code {
-      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Monaco, monospace;
-    }
+    pre, code { font-family: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, monospace; }
     code {
       background: var(--code-bg);
       border: 1px solid var(--border);
       padding: 0.15em 0.4em;
       border-radius: 4px;
-      font-size: 0.88em;
+      font-size: 0.87em;
       color: var(--accent2);
+      transition: background 0.25s;
     }
     pre {
       background: var(--code-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1.25rem 1.5rem;
+      padding: 1.1rem 1.4rem;
       overflow-x: auto;
-      margin: 0.75rem 0 1.25rem;
+      margin: 0.6rem 0 1.1rem;
       position: relative;
+      transition: background 0.25s;
     }
-    pre code {
-      background: none;
-      border: none;
-      padding: 0;
-      font-size: 0.9rem;
-      color: var(--text);
-    }
+    pre code { background: none; border: none; padding: 0; font-size: 0.88rem; color: var(--text); }
     .copy-btn {
       position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
+      top: 0.6rem; right: 0.6rem;
       background: var(--surface2);
       border: 1px solid var(--border);
       color: var(--text-dim);
-      padding: 0.25rem 0.6rem;
+      padding: 0.2rem 0.55rem;
       border-radius: 5px;
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       cursor: pointer;
       transition: all 0.15s;
+      font-family: inherit;
     }
     .copy-btn:hover { color: var(--text); border-color: var(--accent); }
 
     /* ── ALERTS ── */
     .alert {
       border-radius: 10px;
-      padding: 1rem 1.25rem;
-      margin: 1rem 0;
+      padding: 0.9rem 1.1rem;
+      margin: 0.9rem 0;
       border-left: 4px solid;
       display: flex;
-      gap: 0.75rem;
+      gap: 0.7rem;
     }
-    .alert-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
-    .alert.info { background: rgba(124,106,247,0.1); border-color: var(--accent); }
-    .alert.success { background: rgba(74,222,128,0.08); border-color: var(--success); }
-    .alert.warn { background: rgba(251,191,36,0.08); border-color: var(--warn); }
-    .alert.danger { background: rgba(248,113,113,0.08); border-color: var(--danger); }
-    .alert p { margin: 0; font-size: 0.92rem; }
-    .alert strong { color: var(--text); }
+    .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.15rem; }
+    .alert.info  { background: rgba(124,106,247,0.08); border-color: var(--accent); }
+    .alert.success { background: rgba(74,222,128,0.07); border-color: var(--success); }
+    .alert.warn  { background: rgba(251,191,36,0.07); border-color: var(--warn); }
+    .alert.danger { background: rgba(248,113,113,0.07); border-color: var(--danger); }
+    .alert p { margin: 0; font-size: 0.9rem; }
 
     /* ── TABLE ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1rem 0;
-      font-size: 0.9rem;
-    }
+    table { width: 100%; border-collapse: collapse; margin: 0.9rem 0; font-size: 0.88rem; }
     th {
       background: var(--surface2);
-      padding: 0.6rem 1rem;
+      padding: 0.55rem 0.9rem;
       text-align: left;
       color: var(--text-dim);
-      font-weight: 600;
-      font-size: 0.8rem;
+      font-weight: 700;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    td {
-      padding: 0.7rem 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    tr:hover td { background: var(--surface); }
+    td { padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+    tr:hover td { background: var(--surface2); }
 
-    /* ── SCENARIO CARDS ── */
+    /* ── SCENARIOS ── */
     .scenario {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.4rem;
+      transition: background 0.25s;
     }
     .scenario-header {
-      padding: 1rem 1.25rem;
+      padding: 0.9rem 1.2rem;
       background: var(--surface2);
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.7rem;
       border-bottom: 1px solid var(--border);
     }
-    .scenario-header h4 { margin: 0; font-size: 1rem; }
-    .scenario-body { padding: 1.25rem; }
+    .scenario-header h4 { margin: 0; font-size: 0.98rem; color: var(--text); }
+    .scenario-body { padding: 1.2rem; }
     .chat-bubble {
-      background: var(--surface2);
       border-radius: 12px;
-      padding: 0.75rem 1rem;
+      padding: 0.65rem 0.9rem;
       margin-bottom: 0.5rem;
-      max-width: 90%;
-      font-size: 0.9rem;
+      max-width: 88%;
+      font-size: 0.88rem;
+      line-height: 1.6;
     }
     .chat-bubble.user {
-      background: rgba(124,106,247,0.2);
-      border: 1px solid rgba(124,106,247,0.3);
+      background: rgba(124,106,247,0.18);
+      border: 1px solid rgba(124,106,247,0.28);
       margin-left: auto;
     }
     .chat-bubble.ai {
+      background: var(--surface2);
       border: 1px solid var(--border);
     }
     .chat-label {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-dim);
-      margin-bottom: 0.25rem;
-      font-weight: 600;
+      margin-bottom: 0.2rem;
+      font-weight: 700;
       text-transform: uppercase;
-    }
-
-    /* ── TOC ACTIVE ── */
-    aside a.active {
-      color: var(--accent);
-      background: rgba(124,106,247,0.1);
     }
 
     /* ── SKILLS GRID ── */
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.75rem;
-      margin: 1rem 0;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 0.65rem;
+      margin: 0.9rem 0;
     }
     .skill-chip {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.6rem 0.85rem;
-      font-size: 0.85rem;
+      padding: 0.55rem 0.8rem;
+      font-size: 0.84rem;
     }
-    .skill-chip span { color: var(--text-dim); font-size: 0.78rem; display: block; }
+    .skill-chip span { color: var(--text-dim); font-size: 0.76rem; display: block; margin-top: 0.1rem; }
 
-    /* ── HIGHLIGHT ── */
+    /* ── UTIL ── */
     .highlight { color: var(--accent2); font-weight: 600; }
     .muted { color: var(--text-dim); }
+    kbd {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-size: 0.82em;
+    }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      aside { display: none; }
-      .wrapper { padding: 70px 1rem 3rem; }
-      .hero h1 { font-size: 1.8rem; }
-      .card-grid { grid-template-columns: 1fr; }
+    /* ── PROGRESS ── */
+    .progress-bar {
+      position: fixed;
+      top: 60px; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 99;
+      transition: width 0.1s;
     }
 
     /* ── FOOTER ── */
     footer {
       text-align: center;
-      padding: 3rem 2rem;
+      padding: 2.5rem 2rem;
       color: var(--text-dim);
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       border-top: 1px solid var(--border);
     }
     footer a { color: var(--accent); text-decoration: none; }
+    .footer-by {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .footer-by strong {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-    /* progress bar */
-    .progress-bar {
-      position: fixed;
-      top: 60px;
-      left: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      z-index: 99;
-      transition: width 0.1s;
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      aside { display: none; }
+      .wrapper { padding: 68px 1rem 3rem; }
+      .hero h1 { font-size: 1.7rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
@@ -415,518 +443,508 @@
 
 <div class="progress-bar" id="progressBar"></div>
 
-<!-- NAV -->
+<!-- ══════════ NAV ══════════ -->
 <nav>
-  <div class="nav-logo">🦞 OpenClaw 完全指南</div>
+  <div class="nav-logo">🦞 <span class="lang-zh">OpenClaw 完全指南</span><span class="lang-en">OpenClaw Guide</span></div>
   <ul class="nav-links">
-    <li><a href="#what-is">是什么</a></li>
-    <li><a href="#install">安装部署</a></li>
-    <li><a href="#claude">接入 Claude</a></li>
-    <li><a href="#channels">连接渠道</a></li>
-    <li><a href="#skills">安装技能</a></li>
-    <li><a href="#usage">日常使用</a></li>
-    <li><a href="#advanced">进阶配置</a></li>
-    <li><a href="#pitfalls">踩坑记录</a></li>
-    <li><a href="#tips">实战技巧</a></li>
-    <li><a href="#faq">常见问题</a></li>
+    <li><a href="#what-is"><span class="lang-zh">是什么</span><span class="lang-en">Intro</span></a></li>
+    <li><a href="#install"><span class="lang-zh">安装部署</span><span class="lang-en">Install</span></a></li>
+    <li><a href="#claude"><span class="lang-zh">接入 Claude</span><span class="lang-en">Claude API</span></a></li>
+    <li><a href="#channels"><span class="lang-zh">连接渠道</span><span class="lang-en">Channels</span></a></li>
+    <li><a href="#skills"><span class="lang-zh">安装技能</span><span class="lang-en">Skills</span></a></li>
+    <li><a href="#usage"><span class="lang-zh">日常使用</span><span class="lang-en">Usage</span></a></li>
+    <li><a href="#pitfalls"><span class="lang-zh">踩坑记录</span><span class="lang-en">Pitfalls</span></a></li>
+    <li><a href="#tips"><span class="lang-zh">实战技巧</span><span class="lang-en">Pro Tips</span></a></li>
+    <li><a href="#faq">FAQ</a></li>
   </ul>
+  <div class="nav-actions">
+    <button class="nav-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <button class="nav-btn" id="themeBtn" onclick="toggleTheme()">☀️</button>
+    <span class="nav-by">by <strong>Steve</strong></span>
+  </div>
 </nav>
 
 <div class="wrapper">
-  <!-- SIDEBAR -->
+  <!-- ══════════ SIDEBAR ══════════ -->
   <aside>
-    <div class="section-title">目录</div>
+    <div class="sidebar-title"><span class="lang-zh">目录</span><span class="lang-en">Contents</span></div>
     <ul>
-      <li><a href="#what-is">🤔 OpenClaw 是什么</a></li>
-      <li><a href="#architecture">📐 系统架构</a></li>
-      <li><a href="#requirements">📋 前置要求</a></li>
-      <li><a href="#install">⚙️ 第一步：安装</a></li>
-      <li><a href="#first-run">🚀 第二步：初始化</a></li>
-      <li><a href="#claude">🤖 第三步：接入 Claude</a></li>
-      <li><a href="#channels">📡 第四步：连接渠道</a></li>
+      <li><a href="#what-is"><span class="lang-zh">🤔 是什么</span><span class="lang-en">🤔 What is OpenClaw</span></a></li>
+      <li><a href="#architecture"><span class="lang-zh">📐 系统架构</span><span class="lang-en">📐 Architecture</span></a></li>
+      <li><a href="#requirements"><span class="lang-zh">📋 前置要求</span><span class="lang-en">📋 Requirements</span></a></li>
+      <li><a href="#install"><span class="lang-zh">⚙️ 安装</span><span class="lang-en">⚙️ Install</span></a></li>
+      <li><a href="#first-run"><span class="lang-zh">🚀 初始化</span><span class="lang-en">🚀 First Run</span></a></li>
+      <li><a href="#claude"><span class="lang-zh">🤖 接入 Claude</span><span class="lang-en">🤖 Claude API</span></a></li>
+      <li><a href="#channels"><span class="lang-zh">📡 连接渠道</span><span class="lang-en">📡 Channels</span></a></li>
       <li><a href="#telegram">  └ Telegram</a></li>
-      <li><a href="#feishu">  └ 飞书</a></li>
+      <li><a href="#feishu"><span class="lang-zh">  └ 飞书</span><span class="lang-en">  └ Lark/Feishu</span></a></li>
       <li><a href="#discord">  └ Discord</a></li>
-      <li><a href="#skills">🛠 安装技能 (Skills)</a></li>
-      <li><a href="#workspace">📁 工作区配置</a></li>
-      <li><a href="#usage">💬 日常使用场景</a></li>
-      <li><a href="#advanced">⚡ 进阶配置</a></li>
-      <li><a href="#pitfalls">💥 真实踩坑记录</a></li>
-      <li><a href="#tips">💡 实战小技巧</a></li>
-      <li><a href="#faq">❓ 常见问题</a></li>
+      <li><a href="#skills"><span class="lang-zh">🛠 安装技能</span><span class="lang-en">🛠 Skills</span></a></li>
+      <li><a href="#workspace"><span class="lang-zh">📁 工作区</span><span class="lang-en">📁 Workspace</span></a></li>
+      <li><a href="#usage"><span class="lang-zh">💬 日常使用</span><span class="lang-en">💬 Usage Scenarios</span></a></li>
+      <li><a href="#advanced"><span class="lang-zh">⚡ 进阶配置</span><span class="lang-en">⚡ Advanced</span></a></li>
+      <li><a href="#pitfalls"><span class="lang-zh">💥 踩坑记录</span><span class="lang-en">💥 Pitfalls</span></a></li>
+      <li><a href="#tips"><span class="lang-zh">💡 实战技巧</span><span class="lang-en">💡 Pro Tips</span></a></li>
+      <li><a href="#faq">❓ FAQ</a></li>
     </ul>
   </aside>
 
-  <!-- MAIN -->
+  <!-- ══════════ MAIN ══════════ -->
   <main>
 
     <!-- HERO -->
     <div class="hero">
       <div class="hero-emoji">🦞</div>
-      <h1>OpenClaw 完全新手指南</h1>
-      <p>从零开始，把 Claude 变成你的私人 AI 助手，接入 Telegram / 飞书 / Discord，7×24 小时帮你干活。</p>
+      <h1>
+        <span class="lang-zh">OpenClaw 完全新手指南</span>
+        <span class="lang-en">OpenClaw Complete Guide</span>
+      </h1>
+      <p>
+        <span class="lang-zh">从零开始，把 Claude 变成你的私人 AI 助手，接入 Telegram / 飞书 / Discord，7×24 小时帮你干活。</span>
+        <span class="lang-en">Deploy your own private AI assistant powered by Claude — connected to Telegram, Feishu, and Discord, available 24/7.</span>
+      </p>
       <div class="hero-tags">
-        <span class="tag">⏱ 阅读约 20 分钟</span>
+        <span class="tag lang-zh">⏱ 阅读约 20 分钟</span>
+        <span class="tag lang-en">⏱ 20 min read</span>
         <span class="tag">🖥 macOS / Linux</span>
         <span class="tag">🤖 Claude API</span>
-        <span class="tag">📱 多渠道接入</span>
-        <span class="tag">🛠 可扩展技能</span>
+        <span class="tag lang-zh">📱 多渠道接入</span>
+        <span class="tag lang-en">📱 Multi-channel</span>
+        <span class="tag lang-zh">🛠 可扩展技能</span>
+        <span class="tag lang-en">🛠 Extensible Skills</span>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════ WHAT IS ═══════════════════════════════ -->
+    <!-- ══════════════ WHAT IS ══════════════ -->
     <section id="what-is">
-      <h2>🤔 OpenClaw 是什么？</h2>
-      <p>
-        想象一下：你在 Telegram 上随手发一句话，就能让 AI 帮你查邮件、读文件、搜索资料、写代码、发消息……
-        <br>这就是 OpenClaw 做的事情。
-      </p>
-      <p>
-        <strong>OpenClaw</strong> 是一个<span class="highlight">自托管的 AI 助手框架</span>，你在自己的电脑/服务器上运行，
-        通过 Claude、GPT 等大语言模型驱动，然后接入你常用的聊天软件（Telegram、飞书、Discord 等）。
-      </p>
+      <h2>
+        <span class="lang-zh">🤔 OpenClaw 是什么？</span>
+        <span class="lang-en">🤔 What is OpenClaw?</span>
+      </h2>
+      <div class="lang-zh">
+        <p>想象一下：你在 Telegram 上随手发一句话，就能让 AI 帮你查邮件、读文件、搜索资料、写代码、发消息……这就是 OpenClaw 做的事情。</p>
+        <p><strong>OpenClaw</strong> 是一个<span class="highlight">自托管的 AI 助手框架</span>，你在自己的电脑/服务器上运行，通过 Claude 等大语言模型驱动，接入你常用的聊天软件。</p>
+      </div>
+      <div class="lang-en">
+        <p>Imagine: you send a casual message on Telegram, and your AI instantly checks emails, reads files, searches the web, writes code, sends messages... That's exactly what OpenClaw does.</p>
+        <p><strong>OpenClaw</strong> is a <span class="highlight">self-hosted AI assistant framework</span> that runs on your own machine, powered by Claude or other LLMs, connected to your favorite chat apps.</p>
+      </div>
       <div class="card-grid">
         <div class="card">
           <div class="card-icon">🔒</div>
-          <h4>完全私有</h4>
-          <p>运行在你自己的机器上，数据不经过第三方服务器</p>
+          <h4><span class="lang-zh">完全私有</span><span class="lang-en">Fully Private</span></h4>
+          <p><span class="lang-zh">运行在你自己的机器上，数据不经过第三方服务器</span><span class="lang-en">Runs on your own machine — your data never touches third-party servers</span></p>
         </div>
         <div class="card">
           <div class="card-icon">🧩</div>
-          <h4>可扩展技能</h4>
-          <p>通过 Skills 系统扩展能力：查邮件、控音乐、搜网页……</p>
+          <h4><span class="lang-zh">可扩展技能</span><span class="lang-en">Extensible Skills</span></h4>
+          <p><span class="lang-zh">通过 Skills 系统扩展能力：查邮件、控音乐、搜网页……</span><span class="lang-en">Extend with Skills: email, music, web search, calendars, and more</span></p>
         </div>
         <div class="card">
           <div class="card-icon">💬</div>
-          <h4>多渠道接入</h4>
-          <p>Telegram / 飞书 / Discord / WhatsApp / iMessage 均可</p>
+          <h4><span class="lang-zh">多渠道接入</span><span class="lang-en">Multi-Channel</span></h4>
+          <p><span class="lang-zh">Telegram / 飞书 / Discord / WhatsApp / iMessage 均可</span><span class="lang-en">Telegram, Feishu, Discord, WhatsApp, iMessage and more</span></p>
         </div>
         <div class="card">
           <div class="card-icon">🧠</div>
-          <h4>持久记忆</h4>
-          <p>AI 有长期记忆，了解你的习惯和偏好</p>
+          <h4><span class="lang-zh">持久记忆</span><span class="lang-en">Persistent Memory</span></h4>
+          <p><span class="lang-zh">AI 有长期记忆，了解你的习惯和偏好</span><span class="lang-en">AI builds long-term memory to understand your habits and preferences</span></p>
         </div>
         <div class="card">
           <div class="card-icon">⏰</div>
-          <h4>定时任务</h4>
-          <p>设置 Cron，让 AI 在固定时间自动做事</p>
+          <h4><span class="lang-zh">定时任务</span><span class="lang-en">Scheduled Tasks</span></h4>
+          <p><span class="lang-zh">设置 Cron，让 AI 在固定时间自动做事</span><span class="lang-en">Set up Cron jobs — let AI work on a schedule automatically</span></p>
         </div>
         <div class="card">
           <div class="card-icon">🤖</div>
-          <h4>多 Agent</h4>
-          <p>可以配置多个助手，分别处理不同渠道和任务</p>
+          <h4><span class="lang-zh">多 Agent</span><span class="lang-en">Multiple Agents</span></h4>
+          <p><span class="lang-zh">可以配置多个助手，分别处理不同渠道和任务</span><span class="lang-en">Run multiple AI agents, each handling different channels and tasks</span></p>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ ARCHITECTURE ═══════════════════════════════ -->
+    <!-- ══════════════ ARCHITECTURE ══════════════ -->
     <section id="architecture">
-      <h2>📐 系统架构（简版）</h2>
-      <p>不需要深入理解，但知道这几个概念会帮助你更快上手：</p>
+      <h2>
+        <span class="lang-zh">📐 系统架构（简版）</span>
+        <span class="lang-en">📐 Architecture (Simple Version)</span>
+      </h2>
+      <div class="lang-zh"><p>不需要深入理解，但知道这几个概念会帮助你更快上手：</p></div>
+      <div class="lang-en"><p>You don't need to go deep — but knowing these concepts will help you get started faster:</p></div>
       <div class="card">
         <table>
           <tr>
-            <th>组件</th>
-            <th>是什么</th>
-            <th>类比</th>
+            <th><span class="lang-zh">组件</span><span class="lang-en">Component</span></th>
+            <th><span class="lang-zh">是什么</span><span class="lang-en">What It Is</span></th>
+            <th><span class="lang-zh">类比</span><span class="lang-en">Analogy</span></th>
           </tr>
           <tr>
             <td><strong>Gateway</strong></td>
-            <td>OpenClaw 的核心服务，在后台运行</td>
-            <td>大脑 + 神经系统</td>
+            <td><span class="lang-zh">OpenClaw 的核心服务，在后台运行</span><span class="lang-en">The core background service of OpenClaw</span></td>
+            <td><span class="lang-zh">大脑 + 神经系统</span><span class="lang-en">Brain + nervous system</span></td>
           </tr>
           <tr>
             <td><strong>Agent</strong></td>
-            <td>AI 助手实例（你可以有多个）</td>
-            <td>有个性的具体助手</td>
+            <td><span class="lang-zh">AI 助手实例（可以有多个）</span><span class="lang-en">An AI assistant instance (you can have multiple)</span></td>
+            <td><span class="lang-zh">有个性的具体助手</span><span class="lang-en">A specific assistant with personality</span></td>
           </tr>
           <tr>
             <td><strong>Channel</strong></td>
-            <td>接入的聊天渠道（Telegram/飞书等）</td>
-            <td>助手的"嘴巴"和"耳朵"</td>
+            <td><span class="lang-zh">接入的聊天渠道</span><span class="lang-en">Connected chat platform</span></td>
+            <td><span class="lang-zh">助手的"嘴巴"和"耳朵"</span><span class="lang-en">The assistant's mouth and ears</span></td>
           </tr>
           <tr>
             <td><strong>Skills</strong></td>
-            <td>扩展功能的插件（邮件/日历/音乐等）</td>
-            <td>助手学的技能</td>
+            <td><span class="lang-zh">扩展功能的插件</span><span class="lang-en">Extension plugins</span></td>
+            <td><span class="lang-zh">助手学的技能</span><span class="lang-en">Skills the assistant has learned</span></td>
           </tr>
           <tr>
             <td><strong>Workspace</strong></td>
-            <td>AI 的工作目录（文件、记忆都在这里）</td>
-            <td>助手的桌面 + 笔记本</td>
+            <td><span class="lang-zh">AI 的工作目录，文件/记忆都在这里</span><span class="lang-en">AI's working directory — files, memory, configs</span></td>
+            <td><span class="lang-zh">助手的桌面 + 笔记本</span><span class="lang-en">Assistant's desk and notebook</span></td>
           </tr>
         </table>
       </div>
       <div class="alert info">
         <span class="alert-icon">💡</span>
-        <p>你只需要在自己的电脑上安装 OpenClaw，它会在后台静默运行。你通过 Telegram/飞书等聊天软件和 AI 交互，AI 可以访问你电脑上的文件、执行命令、调用各种服务。</p>
+        <p class="lang-zh">你只需要在自己的电脑上安装 OpenClaw，它会在后台静默运行。你通过 Telegram/飞书等聊天软件和 AI 交互，AI 可以访问你电脑上的文件、执行命令、调用各种服务。</p>
+        <p class="lang-en">Just install OpenClaw on your computer — it runs silently in the background. You interact via Telegram/Feishu, and the AI can access your files, run commands, and call external services.</p>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ REQUIREMENTS ═══════════════════════════════ -->
+    <!-- ══════════════ REQUIREMENTS ══════════════ -->
     <section id="requirements">
-      <h2>📋 前置要求</h2>
+      <h2>
+        <span class="lang-zh">📋 前置要求</span>
+        <span class="lang-en">📋 Requirements</span>
+      </h2>
       <div class="card-grid">
         <div class="card">
-          <h4>💻 操作系统</h4>
-          <p>macOS 12+ 或 Linux (Ubuntu 20.04+)<br><span class="muted">Windows 需用 WSL2</span></p>
+          <h4>💻 <span class="lang-zh">操作系统</span><span class="lang-en">OS</span></h4>
+          <p><span class="lang-zh">macOS 12+ 或 Linux (Ubuntu 20.04+)<br><span class="muted">Windows 需用 WSL2</span></span><span class="lang-en">macOS 12+ or Linux (Ubuntu 20.04+)<br><span class="muted">Windows requires WSL2</span></span></p>
         </div>
         <div class="card">
           <h4>📦 Node.js</h4>
-          <p>Node.js 18 或以上版本<br><span class="muted">推荐用 nvm 管理版本</span></p>
+          <p><span class="lang-zh">Node.js 18 或以上版本<br><span class="muted">推荐用 nvm 管理版本</span></span><span class="lang-en">Node.js 18 or higher<br><span class="muted">Recommended: use nvm to manage versions</span></span></p>
         </div>
         <div class="card">
           <h4>🔑 Claude API Key</h4>
-          <p>需要 Anthropic 账号<br><span class="muted">可在 console.anthropic.com 获取</span></p>
+          <p><span class="lang-zh">需要 Anthropic 账号<br><span class="muted">在 console.anthropic.com 获取</span></span><span class="lang-en">Requires an Anthropic account<br><span class="muted">Get it at console.anthropic.com</span></span></p>
         </div>
         <div class="card">
-          <h4>🌐 网络</h4>
-          <p>能访问 Anthropic API<br><span class="muted">中国大陆需要代理</span></p>
+          <h4>🌐 <span class="lang-zh">网络</span><span class="lang-en">Network</span></h4>
+          <p><span class="lang-zh">能访问 Anthropic API<br><span class="muted">中国大陆需要代理</span></span><span class="lang-en">Access to Anthropic API<br><span class="muted">VPN required in mainland China</span></span></p>
         </div>
       </div>
-      <h3>检查你的 Node.js 版本</h3>
-      <p>打开终端（Terminal），输入：</p>
+      <h3><span class="lang-zh">检查 Node.js 版本</span><span class="lang-en">Check your Node.js version</span></h3>
       <div style="position:relative">
         <pre><code>node --version
-# 应该显示 v18.x.x 或更高
-# 如果没安装，参考下方安装方法</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+# <span class="lang-zh">应该显示 v18.x.x 或更高</span><span class="lang-en">Should show v18.x.x or higher</span></code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <h4>如果没有 Node.js，用这个方法安装（推荐）：</h4>
+      <h4><span class="lang-zh">如果没有 Node.js，用 nvm 安装（推荐）：</span><span class="lang-en">Install Node.js via nvm (recommended):</span></h4>
       <div style="position:relative">
-        <pre><code># 安装 nvm（Node 版本管理器）
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-
-# 重新打开终端后，安装 Node.js
-nvm install 20
-nvm use 20
-nvm alias default 20</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+# <span class="lang-zh">重新打开终端后</span><span class="lang-en">Reopen terminal, then</span>
+nvm install 20 && nvm use 20 && nvm alias default 20</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ INSTALL ═══════════════════════════════ -->
+    <!-- ══════════════ INSTALL ══════════════ -->
     <section id="install">
-      <h2>⚙️ 第一步：安装 OpenClaw</h2>
-      <p>打开终端，一行命令搞定：</p>
+      <h2>
+        <span class="lang-zh">⚙️ 第一步：安装 OpenClaw</span>
+        <span class="lang-en">⚙️ Step 1: Install OpenClaw</span>
+      </h2>
+      <div class="lang-zh"><p>打开终端，一行命令搞定：</p></div>
+      <div class="lang-en"><p>Open your terminal and run one command:</p></div>
       <div style="position:relative">
         <pre><code>npm install -g openclaw</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="alert info">
         <span class="alert-icon">ℹ️</span>
-        <p>安装完成后，<code>openclaw</code> 命令就全局可用了。如果提示权限错误，试试 <code>sudo npm install -g openclaw</code>（macOS 用户推荐用 nvm 避免权限问题）。</p>
+        <p class="lang-zh">安装完成后，<code>openclaw</code> 命令全局可用。如果提示权限错误，试试 <code>sudo npm install -g openclaw</code>，或用 nvm 避免权限问题。</p>
+        <p class="lang-en">After install, the <code>openclaw</code> command is available globally. If you get permission errors, try <code>sudo npm install -g openclaw</code>, or use nvm to avoid permission issues entirely.</p>
       </div>
-      <h3>验证安装成功</h3>
+      <h3><span class="lang-zh">验证安装</span><span class="lang-en">Verify installation</span></h3>
       <div style="position:relative">
         <pre><code>openclaw --version
-# 显示版本号就代表安装成功，例如：OpenClaw 2026.3.13</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+# OpenClaw 2026.x.x</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <h3>创建工作区目录</h3>
-      <p>AI 需要一个"家"，用来存放记忆、工具和配置：</p>
+      <h3><span class="lang-zh">创建工作区</span><span class="lang-en">Create your workspace</span></h3>
       <div style="position:relative">
-        <pre><code># 创建工作区（你可以改成任意位置）
-mkdir -p ~/my-ai-workspace
+        <pre><code>mkdir -p ~/my-ai-workspace
 cd ~/my-ai-workspace</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ FIRST RUN ═══════════════════════════════ -->
+    <!-- ══════════════ FIRST RUN ══════════════ -->
     <section id="first-run">
-      <h2>🚀 第二步：初始化与启动 Gateway</h2>
-      <h3>运行交互式向导</h3>
-      <p>OpenClaw 提供了一个引导式的初始配置向导，跟着提示走就行：</p>
+      <h2>
+        <span class="lang-zh">🚀 第二步：初始化与启动 Gateway</span>
+        <span class="lang-en">🚀 Step 2: Initialize &amp; Start Gateway</span>
+      </h2>
+      <h3><span class="lang-zh">运行交互式向导</span><span class="lang-en">Run the interactive wizard</span></h3>
       <div style="position:relative">
         <pre><code>openclaw configure</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-      <p>向导会问你一些问题，按下面的参考回答：</p>
       <div class="card">
         <table>
-          <tr><th>问题</th><th>建议回答</th></tr>
-          <tr><td>Workspace directory</td><td>输入你刚创建的路径，如 <code>/Users/你的名字/my-ai-workspace</code></td></tr>
-          <tr><td>AI provider</td><td>选 <strong>Anthropic (Claude)</strong></td></tr>
-          <tr><td>API Key</td><td>粘贴你的 Claude API Key（下一章节讲如何获取）</td></tr>
-          <tr><td>Default model</td><td>推荐 <code>claude-sonnet-4-6</code>（性价比最高）</td></tr>
-          <tr><td>Agent name</td><td>给你的 AI 起个名字，如 <code>Aria</code>、<code>Nova</code></td></tr>
+          <tr>
+            <th><span class="lang-zh">问题</span><span class="lang-en">Prompt</span></th>
+            <th><span class="lang-zh">建议回答</span><span class="lang-en">Suggested Answer</span></th>
+          </tr>
+          <tr>
+            <td>Workspace directory</td>
+            <td><span class="lang-zh">你刚创建的路径，如 <code>~/my-ai-workspace</code></span><span class="lang-en">Your workspace path, e.g. <code>~/my-ai-workspace</code></span></td>
+          </tr>
+          <tr>
+            <td>AI provider</td>
+            <td><strong>Anthropic (Claude)</strong></td>
+          </tr>
+          <tr>
+            <td>API Key</td>
+            <td><span class="lang-zh">粘贴你的 Claude API Key（下章讲如何获取）</span><span class="lang-en">Paste your Claude API Key (explained in next section)</span></td>
+          </tr>
+          <tr>
+            <td>Default model</td>
+            <td><code>claude-sonnet-4-6</code> <span class="lang-zh">（推荐）</span><span class="lang-en">(recommended)</span></td>
+          </tr>
+          <tr>
+            <td>Agent name</td>
+            <td><span class="lang-zh">给 AI 起个名字，如 <code>Aria</code></span><span class="lang-en">Give your AI a name, e.g. <code>Aria</code></span></td>
+          </tr>
         </table>
       </div>
-      <h3>启动 Gateway 服务</h3>
-      <p>Gateway 是 OpenClaw 的核心后台服务，需要保持运行：</p>
+      <h3><span class="lang-zh">启动 Gateway</span><span class="lang-en">Start the Gateway</span></h3>
       <div style="position:relative">
-        <pre><code># 启动 Gateway（首次启动）
-openclaw gateway start
-
-# 查看运行状态
-openclaw gateway status
-
-# 如果需要重启
-openclaw gateway restart</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>openclaw gateway start
+openclaw gateway status   # <span class="lang-zh">查看状态</span><span class="lang-en">Check status</span>
+openclaw gateway restart  # <span class="lang-zh">重启</span><span class="lang-en">Restart if needed</span></code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="alert success">
         <span class="alert-icon">✅</span>
-        <p>看到 <strong>Gateway is running</strong> 就代表成功了！Gateway 会在后台静默运行，关闭终端不影响。</p>
+        <p class="lang-zh">看到 <strong>Gateway is running</strong> 就代表成功了！Gateway 会在后台静默运行，关闭终端不影响。</p>
+        <p class="lang-en">Seeing <strong>Gateway is running</strong> means success! The Gateway runs silently in the background — closing the terminal won't stop it.</p>
       </div>
-      <h3>让 Gateway 开机自启（可选）</h3>
-      <p>推荐设置，这样重启电脑后不需要手动启动：</p>
+      <h3><span class="lang-zh">设置开机自启（推荐）</span><span class="lang-en">Auto-start on boot (recommended)</span></h3>
       <div style="position:relative">
-        <pre><code># macOS：注册为 launchd 服务
+        <pre><code># macOS (launchd)
 openclaw gateway install
 
-# Linux：注册为 systemd 服务
+# Linux (systemd)
 openclaw gateway install --systemd</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ CLAUDE ═══════════════════════════════ -->
+    <!-- ══════════════ CLAUDE ══════════════ -->
     <section id="claude">
-      <h2>🤖 第三步：获取并配置 Claude API Key</h2>
-
-      <h3>申请 Anthropic API Key</h3>
+      <h2>
+        <span class="lang-zh">🤖 第三步：获取并配置 Claude API Key</span>
+        <span class="lang-en">🤖 Step 3: Get &amp; Configure Claude API Key</span>
+      </h2>
+      <h3><span class="lang-zh">申请 Anthropic API Key</span><span class="lang-en">Get your Anthropic API Key</span></h3>
       <ol class="steps">
         <li>
           <div class="step-content">
-            <h4>访问 Anthropic Console</h4>
-            <p>打开浏览器，访问 <strong>console.anthropic.com</strong>，注册或登录账号。</p>
+            <h4><span class="lang-zh">访问 Anthropic Console</span><span class="lang-en">Visit Anthropic Console</span></h4>
+            <p><span class="lang-zh">打开 <strong>console.anthropic.com</strong>，注册或登录账号。</span><span class="lang-en">Go to <strong>console.anthropic.com</strong>, sign up or log in.</span></p>
             <div class="alert warn">
               <span class="alert-icon">⚠️</span>
-              <p>国内用户需要代理才能访问。建议注册时使用非中国大陆的手机号。</p>
+              <p class="lang-zh">国内用户需要代理才能访问。建议注册时使用非中国大陆的手机号。</p>
+              <p class="lang-en">Users in mainland China need a VPN. Use a non-mainland phone number when signing up.</p>
             </div>
           </div>
         </li>
         <li>
           <div class="step-content">
-            <h4>创建 API Key</h4>
-            <p>登录后，点击左侧菜单的 <strong>「API Keys」</strong>，然后点 <strong>「Create Key」</strong>。</p>
-            <p>给 Key 起个名字（如 <code>my-openclaw</code>），然后点创建。</p>
+            <h4><span class="lang-zh">创建 API Key</span><span class="lang-en">Create an API Key</span></h4>
+            <p><span class="lang-zh">点击左侧「API Keys」→「Create Key」，给 Key 起个名字（如 <code>my-openclaw</code>）。</span><span class="lang-en">Click <strong>"API Keys"</strong> in the sidebar → <strong>"Create Key"</strong>, give it a name like <code>my-openclaw</code>.</span></p>
           </div>
         </li>
         <li>
           <div class="step-content">
-            <h4>复制 Key（只显示一次！）</h4>
-            <p>Key 会以 <code>sk-ant-api03-...</code> 开头。<strong>立刻复制保存</strong>，关掉页面就看不到了。</p>
+            <h4><span class="lang-zh">复制 Key（只显示一次！）</span><span class="lang-en">Copy the Key (shown only once!)</span></h4>
+            <p><span class="lang-zh">Key 以 <code>sk-ant-api03-...</code> 开头，<strong>立刻复制保存</strong>，关掉页面就看不到了。</span><span class="lang-en">The key starts with <code>sk-ant-api03-...</code>. <strong>Copy it immediately</strong> — you won't see it again after closing the page.</span></p>
           </div>
         </li>
         <li>
           <div class="step-content">
-            <h4>充值（建议先充 $5~$20）</h4>
-            <p>在 Console 的 <strong>Billing</strong> 页面充值。Claude Sonnet 的费用约为每 100 万 token 约 $3，日常使用非常省。</p>
+            <h4><span class="lang-zh">充值（建议先充 $5~$20）</span><span class="lang-en">Add credits ($5–$20 to start)</span></h4>
+            <p><span class="lang-zh">在 Console 的 <strong>Billing</strong> 页面充值。Claude Sonnet 约每 100 万 token $3，日常使用非常省。</span><span class="lang-en">Go to <strong>Billing</strong> in the Console. Claude Sonnet costs ~$3 per million input tokens — very affordable for daily use.</span></p>
           </div>
         </li>
       </ol>
-
-      <h3>将 API Key 配置到 OpenClaw</h3>
+      <h3><span class="lang-zh">配置到 OpenClaw</span><span class="lang-en">Configure in OpenClaw</span></h3>
       <div style="position:relative">
-        <pre><code># 方法一：通过命令行配置（推荐）
-openclaw config set auth.anthropic.apiKey "sk-ant-api03-你的key"
+        <pre><code>openclaw config set auth.anthropic.apiKey "sk-ant-api03-你的key"
 
-# 方法二：重新运行向导
-openclaw configure
-
-# 方法三：直接编辑配置文件
-# 配置文件在：~/.openclaw/openclaw.json</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+# <span class="lang-zh">或重新运行向导</span><span class="lang-en">Or re-run the wizard</span>
+openclaw configure</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-
-      <h3>验证 API 连通性</h3>
+      <h3><span class="lang-zh">验证连通性</span><span class="lang-en">Verify the connection</span></h3>
       <div style="position:relative">
-        <pre><code># 运行健康检查
-openclaw doctor
-
-# 测试 AI 对话（不需要聊天软件）
-openclaw agent "你好，请介绍一下你自己"</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>openclaw doctor
+openclaw agent "Hello, introduce yourself"</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
       <div class="alert success">
         <span class="alert-icon">✅</span>
-        <p>如果 <code>openclaw doctor</code> 显示所有检查通过，或者 <code>openclaw agent</code> 命令返回了 AI 的回答，说明 Claude 已成功接入！</p>
+        <p class="lang-zh">如果 <code>openclaw doctor</code> 所有检查通过，或者 <code>openclaw agent</code> 返回了 AI 的回答，Claude 已成功接入！</p>
+        <p class="lang-en">If <code>openclaw doctor</code> passes all checks, or <code>openclaw agent</code> returns a response — Claude is connected!</p>
       </div>
-
-      <h3>选择合适的模型</h3>
+      <h3><span class="lang-zh">选择合适的模型</span><span class="lang-en">Choosing the right model</span></h3>
       <div class="card">
         <table>
-          <tr><th>模型</th><th>特点</th><th>适合场景</th><th>价格（每百万 token）</th></tr>
+          <tr>
+            <th><span class="lang-zh">模型</span><span class="lang-en">Model</span></th>
+            <th><span class="lang-zh">特点</span><span class="lang-en">Strengths</span></th>
+            <th><span class="lang-zh">适合场景</span><span class="lang-en">Best For</span></th>
+            <th><span class="lang-zh">价格</span><span class="lang-en">Price (per M tokens)</span></th>
+          </tr>
           <tr>
             <td><strong>claude-sonnet-4-6</strong></td>
-            <td>⭐ 推荐</td>
-            <td>日常全能，速度快，性价比高</td>
-            <td>输入 $3 / 输出 $15</td>
+            <td><span class="lang-zh">⭐ 推荐</span><span class="lang-en">⭐ Recommended</span></td>
+            <td><span class="lang-zh">日常全能，速度快，性价比高</span><span class="lang-en">All-around daily use, fast, best value</span></td>
+            <td><span class="lang-zh">输入 $3 / 输出 $15</span><span class="lang-en">In $3 / Out $15</span></td>
           </tr>
           <tr>
             <td><strong>claude-opus-4-6</strong></td>
-            <td>最强智能</td>
-            <td>复杂推理、深度分析、研究报告</td>
-            <td>输入 $15 / 输出 $75</td>
+            <td><span class="lang-zh">最强智能</span><span class="lang-en">Most capable</span></td>
+            <td><span class="lang-zh">复杂推理、深度分析、研究报告</span><span class="lang-en">Deep reasoning, research, complex analysis</span></td>
+            <td><span class="lang-zh">输入 $15 / 输出 $75</span><span class="lang-en">In $15 / Out $75</span></td>
           </tr>
           <tr>
             <td><strong>claude-haiku-3-5</strong></td>
-            <td>最快最便宜</td>
-            <td>简单问答、高频调用</td>
-            <td>输入 $0.25 / 输出 $1.25</td>
+            <td><span class="lang-zh">最快最便宜</span><span class="lang-en">Fastest &amp; cheapest</span></td>
+            <td><span class="lang-zh">简单问答、高频调用</span><span class="lang-en">Simple Q&amp;A, high-frequency tasks</span></td>
+            <td><span class="lang-zh">输入 $0.25 / 输出 $1.25</span><span class="lang-en">In $0.25 / Out $1.25</span></td>
           </tr>
         </table>
       </div>
-      <div style="position:relative">
-        <pre><code># 设置默认模型
-openclaw config set agents.defaults.model.primary "anthropic/claude-sonnet-4-6"</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
-      </div>
     </section>
 
-    <!-- ═══════════════════════════════ CHANNELS ═══════════════════════════════ -->
+    <!-- ══════════════ CHANNELS ══════════════ -->
     <section id="channels">
-      <h2>📡 第四步：连接聊天渠道</h2>
-      <p>AI 配置好了，现在要让它"出现"在你的聊天软件里。</p>
+      <h2>
+        <span class="lang-zh">📡 第四步：连接聊天渠道</span>
+        <span class="lang-en">📡 Step 4: Connect Chat Channels</span>
+      </h2>
+      <div class="lang-zh"><p>AI 配置好了，现在让它"出现"在你的聊天软件里。</p></div>
+      <div class="lang-en"><p>Your AI is ready — now let it appear in your chat apps.</p></div>
 
-      <!-- TELEGRAM -->
       <section id="telegram">
-        <h3>🚀 接入 Telegram（推荐首选）</h3>
-        <p>Telegram 是最容易配置的渠道，功能也最完整。</p>
+        <h3>🚀 Telegram <span class="lang-zh">（推荐首选）</span><span class="lang-en">(Recommended first)</span></h3>
         <ol class="steps">
           <li>
             <div class="step-content">
-              <h4>创建 Telegram Bot</h4>
-              <p>在 Telegram 中搜索 <strong>@BotFather</strong>，发送 <code>/newbot</code>。</p>
-              <p>按提示填写：</p>
-              <ul style="padding-left:1.5rem; margin:0.5rem 0; color:var(--text-dim)">
-                <li>Bot 显示名称：比如 <code>My AI Assistant</code></li>
-                <li>Bot 用户名（必须以 bot 结尾）：比如 <code>my_ai_helper_bot</code></li>
-              </ul>
-              <p>BotFather 会返回一个 <strong>Token</strong>，格式类似 <code>7123456789:AAH...</code>，复制保存。</p>
+              <h4><span class="lang-zh">创建 Telegram Bot</span><span class="lang-en">Create a Telegram Bot</span></h4>
+              <p><span class="lang-zh">在 Telegram 中搜索 <strong>@BotFather</strong>，发送 <code>/newbot</code>，按提示填写名称和用户名（必须以 bot 结尾）。BotFather 会返回一个 Token，格式类似 <code>7123456789:AAH...</code>，复制保存。</span><span class="lang-en">Search for <strong>@BotFather</strong> in Telegram, send <code>/newbot</code>, and follow the prompts. BotFather will give you a Token like <code>7123456789:AAH...</code> — copy it.</span></p>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>将 Token 配置到 OpenClaw</h4>
+              <h4><span class="lang-zh">配置到 OpenClaw</span><span class="lang-en">Configure in OpenClaw</span></h4>
               <div style="position:relative">
-                <pre><code># 添加 Telegram 渠道
-openclaw channels add telegram
-
-# 按提示粘贴你的 Bot Token</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <p>或者手动配置（编辑 <code>~/.openclaw/openclaw.json</code>）：</p>
-              <div style="position:relative">
-                <pre><code>{
-  "channels": {
-    "telegram": {
-      "enabled": true,
-      "token": "7123456789:AAH你的token"
-    }
-  }
-}</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre><code>openclaw channels add telegram
+# <span class="lang-zh">按提示粘贴 Bot Token</span><span class="lang-en">Paste your Bot Token when prompted</span></code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
               </div>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>重启 Gateway 并测试</h4>
+              <h4><span class="lang-zh">重启并测试</span><span class="lang-en">Restart &amp; test</span></h4>
               <div style="position:relative">
                 <pre><code>openclaw gateway restart</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
               </div>
-              <p>在 Telegram 中找到你的 Bot，发送 <code>/start</code> 或任意一句话，AI 应该会回复！</p>
+              <p><span class="lang-zh">在 Telegram 找到你的 Bot，发送 <code>/start</code>，AI 应该会回复！</span><span class="lang-en">Find your Bot on Telegram, send <code>/start</code> — the AI should reply!</span></p>
             </div>
           </li>
         </ol>
-
         <div class="alert info">
           <span class="alert-icon">💡</span>
-          <p><strong>安全提示：</strong>默认情况下，任何知道 Bot 用户名的人都可以和你的 AI 说话。建议在配置中设置白名单，只允许你自己的账号：</p>
+          <p class="lang-zh"><strong>安全提示：</strong>默认任何人都能和你的 Bot 说话，建议设置白名单：</p>
+          <p class="lang-en"><strong>Security tip:</strong> By default anyone can talk to your bot. Set an allowlist:</p>
         </div>
         <div style="position:relative">
-          <pre><code># 获取你的 Telegram User ID（发消息给 @userinfobot）
-# 然后配置白名单
-openclaw config set channels.telegram.allowedUsers '["你的UserID"]'</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          <pre><code># <span class="lang-zh">先用 @userinfobot 获取你的 Telegram ID</span><span class="lang-en">Get your ID via @userinfobot first</span>
+openclaw config set channels.telegram.allowedUsers '["YOUR_USER_ID"]'</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </section>
 
-      <!-- FEISHU -->
       <section id="feishu">
-        <h3>🐦 接入飞书</h3>
-        <p>飞书需要创建一个企业自建应用，步骤多一点但并不复杂。</p>
+        <h3>🐦 <span class="lang-zh">飞书 / Lark</span><span class="lang-en">Feishu / Lark</span></h3>
         <ol class="steps">
           <li>
             <div class="step-content">
-              <h4>创建飞书自建应用</h4>
-              <p>访问 <strong>open.feishu.cn</strong>，登录后进入「开发者后台」→「创建企业自建应用」。</p>
-              <p>记录下 App ID 和 App Secret。</p>
+              <h4><span class="lang-zh">创建企业自建应用</span><span class="lang-en">Create an enterprise app</span></h4>
+              <p><span class="lang-zh">访问 <strong>open.feishu.cn</strong> → 开发者后台 → 创建企业自建应用。记录 App ID 和 App Secret。</span><span class="lang-en">Go to <strong>open.feishu.cn</strong> → Developer Console → Create Enterprise App. Note the App ID and App Secret.</span></p>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>配置应用权限</h4>
-              <p>在应用管理页面，进入「权限管理」，开通以下权限：</p>
-              <ul style="padding-left:1.5rem; color:var(--text-dim)">
-                <li><code>im:message</code> — 接收/发送消息</li>
-                <li><code>im:message:send_as_bot</code> — Bot 发消息</li>
-                <li><code>im:resource</code> — 图片/文件</li>
-              </ul>
+              <h4><span class="lang-zh">配置权限</span><span class="lang-en">Configure permissions</span></h4>
+              <p><span class="lang-zh">在权限管理中开通：<code>im:message</code>、<code>im:message:send_as_bot</code>、<code>im:resource</code></span><span class="lang-en">Enable permissions: <code>im:message</code>, <code>im:message:send_as_bot</code>, <code>im:resource</code></span></p>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>配置事件订阅</h4>
-              <p>在「事件订阅」中，填入 OpenClaw 的 Webhook 地址：</p>
+              <h4><span class="lang-zh">配置事件订阅</span><span class="lang-en">Set up event subscription</span></h4>
               <div style="position:relative">
-                <pre><code>http://你的服务器地址:18789/feishu/webhook</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre><code>http://YOUR_SERVER_IP:18789/feishu/webhook</code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
               </div>
               <div class="alert warn">
                 <span class="alert-icon">⚠️</span>
-                <p>如果是本地电脑，飞书无法直接访问，需要用 <strong>内网穿透</strong> 工具（如 Cloudflare Tunnel、ngrok）或部署到有公网 IP 的服务器。</p>
+                <p class="lang-zh">如果是本地电脑，需要用内网穿透工具（Cloudflare Tunnel / ngrok）暴露到公网。</p>
+                <p class="lang-en">For a local machine, you'll need a tunnel tool (Cloudflare Tunnel / ngrok) to expose it publicly.</p>
               </div>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>配置到 OpenClaw</h4>
+              <h4><span class="lang-zh">配置到 OpenClaw</span><span class="lang-en">Configure in OpenClaw</span></h4>
               <div style="position:relative">
-                <pre><code>openclaw channels add feishu
-# 按提示输入 App ID 和 App Secret</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre><code>openclaw channels add feishu</code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
               </div>
             </div>
           </li>
         </ol>
       </section>
 
-      <!-- DISCORD -->
       <section id="discord">
-        <h3>🎮 接入 Discord</h3>
+        <h3>🎮 Discord</h3>
         <ol class="steps">
           <li>
             <div class="step-content">
-              <h4>创建 Discord Application</h4>
-              <p>访问 <strong>discord.com/developers/applications</strong>，点「New Application」。</p>
-              <p>进入应用后，点左侧「Bot」→「Add Bot」，然后点「Reset Token」获取 Bot Token。</p>
+              <h4><span class="lang-zh">创建 Discord Application</span><span class="lang-en">Create a Discord Application</span></h4>
+              <p><span class="lang-zh">访问 <strong>discord.com/developers/applications</strong> → New Application → 左侧 Bot → Add Bot → Reset Token，复制 Token。</span><span class="lang-en">Go to <strong>discord.com/developers/applications</strong> → New Application → Bot → Add Bot → Reset Token. Copy the token.</span></p>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>邀请 Bot 到你的服务器</h4>
-              <p>在「OAuth2」→「URL Generator」中，勾选 <code>bot</code> 权限，以及：</p>
-              <ul style="padding-left:1.5rem; color:var(--text-dim)">
-                <li>Send Messages</li>
-                <li>Read Message History</li>
-                <li>Use Slash Commands</li>
-              </ul>
-              <p>复制生成的链接，在浏览器打开，邀请 Bot 到你的服务器。</p>
+              <h4><span class="lang-zh">邀请 Bot 到服务器</span><span class="lang-en">Invite Bot to your server</span></h4>
+              <p><span class="lang-zh">在 OAuth2 → URL Generator，勾选 bot 权限（Send Messages, Read Message History, Use Slash Commands），复制链接邀请 Bot。</span><span class="lang-en">In OAuth2 → URL Generator, check bot permissions (Send Messages, Read Message History, Use Slash Commands), copy the invite URL.</span></p>
             </div>
           </li>
           <li>
             <div class="step-content">
-              <h4>配置到 OpenClaw</h4>
+              <h4><span class="lang-zh">配置到 OpenClaw</span><span class="lang-en">Configure in OpenClaw</span></h4>
               <div style="position:relative">
-                <pre><code>openclaw channels add discord
-# 粘贴你的 Bot Token</code></pre>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                <pre><code>openclaw channels add discord</code></pre>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
               </div>
             </div>
           </li>
@@ -934,814 +952,637 @@ openclaw config set channels.telegram.allowedUsers '["你的UserID"]'</code></pr
       </section>
     </section>
 
-    <!-- ═══════════════════════════════ SKILLS ═══════════════════════════════ -->
+    <!-- ══════════════ SKILLS ══════════════ -->
     <section id="skills">
-      <h2>🛠 安装技能 (Skills)</h2>
-      <p>
-        Skills 是 OpenClaw 的扩展系统。每个 Skill 给 AI 增加一种新能力。
-        类似手机 App，按需安装，不用就不装。
-      </p>
+      <h2>
+        <span class="lang-zh">🛠 安装技能 (Skills)</span>
+        <span class="lang-en">🛠 Installing Skills</span>
+      </h2>
+      <div class="lang-zh"><p>Skills 是 OpenClaw 的扩展系统——类似手机 App，按需安装，不用就不装。每个 Skill 给 AI 增加一种新能力。</p></div>
+      <div class="lang-en"><p>Skills are OpenClaw's extension system — like phone apps, install what you need. Each Skill adds a new capability to your AI.</p></div>
 
-      <h3>浏览和安装技能</h3>
       <div style="position:relative">
-        <pre><code># 列出所有已安装的技能
+        <pre><code># <span class="lang-zh">列出已安装</span><span class="lang-en">List installed skills</span>
 openclaw skills list
 
-# 搜索可用技能（从 ClaWhub 社区）
-openclaw skills search 邮件
+# <span class="lang-zh">搜索可用技能</span><span class="lang-en">Search available skills</span>
+openclaw skills search email
 
-# 安装技能
-openclaw skills install himalaya   # 邮件管理
-openclaw skills install spotify-player  # Spotify 控制
-openclaw skills install weather    # 天气查询
+# <span class="lang-zh">安装技能</span><span class="lang-en">Install skills</span>
+openclaw skills install himalaya     # email
+openclaw skills install weather      # weather
+openclaw skills install spotify-player  # Spotify
 
-# 更新所有技能
+# <span class="lang-zh">更新全部</span><span class="lang-en">Update all</span>
 openclaw skills update</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
 
-      <h3>推荐的入门技能</h3>
+      <h3><span class="lang-zh">推荐的入门技能</span><span class="lang-en">Recommended starter skills</span></h3>
       <div class="skills-grid">
-        <div class="skill-chip">
-          📧 <strong>himalaya</strong>
-          <span>IMAP/SMTP 邮件管理</span>
-        </div>
-        <div class="skill-chip">
-          🌤️ <strong>weather</strong>
-          <span>天气查询预报</span>
-        </div>
-        <div class="skill-chip">
-          📅 <strong>apple-reminders</strong>
-          <span>Apple 提醒事项</span>
-        </div>
-        <div class="skill-chip">
-          🎵 <strong>spotify-player</strong>
-          <span>Spotify 播放控制</span>
-        </div>
-        <div class="skill-chip">
-          📝 <strong>bear-notes</strong>
-          <span>Bear 笔记管理</span>
-        </div>
-        <div class="skill-chip">
-          🐙 <strong>github</strong>
-          <span>GitHub 操作</span>
-        </div>
-        <div class="skill-chip">
-          🔍 <strong>summarize</strong>
-          <span>网页/视频总结</span>
-        </div>
-        <div class="skill-chip">
-          🎤 <strong>voice-call</strong>
-          <span>语音通话</span>
-        </div>
-        <div class="skill-chip">
-          💻 <strong>coding-agent</strong>
-          <span>代码生成与修改</span>
-        </div>
-        <div class="skill-chip">
-          📸 <strong>camsnap</strong>
-          <span>摄像头抓图</span>
-        </div>
+        <div class="skill-chip">📧 <strong>himalaya</strong><span><span class="lang-zh">IMAP/SMTP 邮件管理</span><span class="lang-en">Email via IMAP/SMTP</span></span></div>
+        <div class="skill-chip">🌤️ <strong>weather</strong><span><span class="lang-zh">天气查询预报</span><span class="lang-en">Weather forecasts</span></span></div>
+        <div class="skill-chip">📅 <strong>apple-reminders</strong><span><span class="lang-zh">Apple 提醒事项</span><span class="lang-en">Apple Reminders</span></span></div>
+        <div class="skill-chip">🎵 <strong>spotify-player</strong><span><span class="lang-zh">Spotify 播放控制</span><span class="lang-en">Spotify playback</span></span></div>
+        <div class="skill-chip">📝 <strong>bear-notes</strong><span><span class="lang-zh">Bear 笔记管理</span><span class="lang-en">Bear Notes</span></span></div>
+        <div class="skill-chip">🐙 <strong>github</strong><span><span class="lang-zh">GitHub 操作</span><span class="lang-en">GitHub operations</span></span></div>
+        <div class="skill-chip">🔍 <strong>summarize</strong><span><span class="lang-zh">网页/视频总结</span><span class="lang-en">Web &amp; video summaries</span></span></div>
+        <div class="skill-chip">🎤 <strong>voice-call</strong><span><span class="lang-zh">语音通话</span><span class="lang-en">Voice calls</span></span></div>
+        <div class="skill-chip">💻 <strong>coding-agent</strong><span><span class="lang-zh">代码生成与修改</span><span class="lang-en">Code generation</span></span></div>
+        <div class="skill-chip">📸 <strong>camsnap</strong><span><span class="lang-zh">摄像头抓图</span><span class="lang-en">Camera snapshots</span></span></div>
       </div>
-
-      <h3>技能安装后在哪里？</h3>
-      <p>技能安装后存放在 <code>~/.openclaw/skills/</code> 目录下，每个技能都有一个 <code>SKILL.md</code> 文件描述其用法。AI 会自动识别并学会使用它们。</p>
-
       <div class="alert info">
         <span class="alert-icon">💡</span>
-        <p>安装技能后，直接用自然语言告诉 AI 你想做什么，它会自动判断用哪个技能。比如安装了 weather 技能后，你可以直接问「今天北京天气怎么样？」</p>
-      </div>
-
-      <h3>手动添加技能（从社区下载）</h3>
-      <div style="position:relative">
-        <pre><code># 也可以直接把技能文件放到技能目录
-mkdir -p ~/.openclaw/skills/my-skill
-# 然后在里面放 SKILL.md 文件即可</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <p class="lang-zh">安装技能后，用自然语言告诉 AI 你想做什么，它会自动判断用哪个技能。比如安装了 weather 后，直接问「今天北京天气怎么样？」就行。</p>
+        <p class="lang-en">After installing a skill, just tell your AI what you want in natural language — it figures out which skill to use. Install weather and ask "What's the weather like in Beijing today?"</p>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ WORKSPACE ═══════════════════════════════ -->
+    <!-- ══════════════ WORKSPACE ══════════════ -->
     <section id="workspace">
-      <h2>📁 工作区配置（让 AI 更了解你）</h2>
-      <p>
-        Workspace 是 AI 的"家"，里面有几个重要文件，你可以编辑它们来告诉 AI 你是谁、你希望它怎么工作。
-      </p>
-
-      <h3>核心文件介绍</h3>
+      <h2>
+        <span class="lang-zh">📁 工作区配置（让 AI 更了解你）</span>
+        <span class="lang-en">📁 Workspace Setup (Help AI Know You)</span>
+      </h2>
+      <div class="lang-zh"><p>Workspace 是 AI 的"家"，里面有几个重要文件，你可以编辑它们来告诉 AI 你是谁、希望它怎么工作。</p></div>
+      <div class="lang-en"><p>The workspace is your AI's "home". A few key files let you tell the AI who you are and how you want it to work.</p></div>
       <div class="card">
         <table>
-          <tr><th>文件</th><th>用途</th><th>谁来写</th></tr>
-          <tr><td><code>SOUL.md</code></td><td>AI 的性格、工作风格、核心原则</td><td>你来定义</td></tr>
-          <tr><td><code>USER.md</code></td><td>你的基本信息（名字、时区、偏好）</td><td>你来填</td></tr>
-          <tr><td><code>AGENTS.md</code></td><td>AI 的行为规则、安全边界</td><td>你来设置</td></tr>
-          <tr><td><code>TOOLS.md</code></td><td>本地设备信息（SSH、摄像头等）</td><td>你来记录</td></tr>
-          <tr><td><code>MEMORY.md</code></td><td>AI 的长期记忆（会自动更新）</td><td>AI 自动维护</td></tr>
-          <tr><td><code>HEARTBEAT.md</code></td><td>定期自动检查任务配置</td><td>你来设定</td></tr>
-          <tr><td><code>memory/</code></td><td>每日记忆日志目录</td><td>AI 自动生成</td></tr>
+          <tr>
+            <th><span class="lang-zh">文件</span><span class="lang-en">File</span></th>
+            <th><span class="lang-zh">用途</span><span class="lang-en">Purpose</span></th>
+            <th><span class="lang-zh">谁来写</span><span class="lang-en">Written by</span></th>
+          </tr>
+          <tr><td><code>SOUL.md</code></td><td><span class="lang-zh">AI 的性格、工作风格、核心原则</span><span class="lang-en">AI personality, work style, core principles</span></td><td><span class="lang-zh">你来定义</span><span class="lang-en">You</span></td></tr>
+          <tr><td><code>USER.md</code></td><td><span class="lang-zh">你的基本信息（名字、时区、偏好）</span><span class="lang-en">Your profile (name, timezone, preferences)</span></td><td><span class="lang-zh">你来填</span><span class="lang-en">You</span></td></tr>
+          <tr><td><code>AGENTS.md</code></td><td><span class="lang-zh">AI 的行为规则、安全边界</span><span class="lang-en">AI behavior rules and safety boundaries</span></td><td><span class="lang-zh">你来设置</span><span class="lang-en">You</span></td></tr>
+          <tr><td><code>TOOLS.md</code></td><td><span class="lang-zh">本地设备信息（SSH、摄像头等）</span><span class="lang-en">Local device info (SSH, cameras, etc.)</span></td><td><span class="lang-zh">你来记录</span><span class="lang-en">You</span></td></tr>
+          <tr><td><code>MEMORY.md</code></td><td><span class="lang-zh">AI 的长期记忆（自动更新）</span><span class="lang-en">AI's long-term memory (auto-maintained)</span></td><td><span class="lang-zh">AI 自动维护</span><span class="lang-en">AI automatically</span></td></tr>
+          <tr><td><code>HEARTBEAT.md</code></td><td><span class="lang-zh">定期自动检查任务配置</span><span class="lang-en">Periodic auto-check task config</span></td><td><span class="lang-zh">你来设定</span><span class="lang-en">You</span></td></tr>
         </table>
       </div>
-
-      <h3>USER.md 示例</h3>
+      <h3>USER.md <span class="lang-zh">示例</span><span class="lang-en">example</span></h3>
       <div style="position:relative">
-        <pre><code># USER.md - 关于我
+        <pre><code><span class="lang-zh"># USER.md - 关于我
 
 - **名字**: 你的名字
-- **称呼**: 如何叫我（可以是昵称）
 - **时区**: Asia/Shanghai
 - **语言**: 主要用中文交流
-- **Telegram**: @your_handle
 
 ## 偏好
 - 回复要简洁直接，不喜欢废话
-- 代码问题用中文解释，但代码本身用英文
-- 早上不要发太多消息打扰我</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
-      </div>
+- 早上不要发太多消息打扰我</span><span class="lang-en"># USER.md - About Me
 
-      <h3>SOUL.md 示例（AI 的性格）</h3>
-      <div style="position:relative">
-        <pre><code># SOUL.md - AI 的核心性格
+- **Name**: Your Name
+- **Timezone**: America/New_York
+- **Language**: English preferred
 
-## 基本原则
-- 直接有用，不要废话连篇
-- 有自己的观点，不要一味附和
-- 遇到不确定的事情，先查清楚再回答
-
-## 工作方式
-- 默认主动一点，不要总是问"需要我帮忙吗？"
-- 重要操作（删除、发消息等）先确认再执行
-- 出错了要告诉我，不要假装没事
-
-## 个性
-- 可以有点幽默感
-- 不需要每句话结尾都加"希望对您有帮助！"</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+## Preferences
+- Be concise and direct, no filler words
+- Don't send too many messages in the morning</span></code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ USAGE ═══════════════════════════════ -->
+    <!-- ══════════════ USAGE ══════════════ -->
     <section id="usage">
-      <h2>💬 日常使用场景</h2>
-      <p>下面是一些真实的使用案例，帮你快速了解 AI 能做什么。</p>
+      <h2>
+        <span class="lang-zh">💬 日常使用场景</span>
+        <span class="lang-en">💬 Usage Scenarios</span>
+      </h2>
+      <div class="lang-zh"><p>下面是真实的使用案例，帮你快速了解 AI 能做什么。</p></div>
+      <div class="lang-en"><p>Real examples to show you what your AI can do.</p></div>
 
+      <!-- Scenario 1 -->
       <div class="scenario">
         <div class="scenario-header">
           <span>📧</span>
-          <h4>场景一：邮件管理</h4>
+          <h4><span class="lang-zh">场景一：邮件管理</span><span class="lang-en">Scenario 1: Email Management</span></h4>
         </div>
         <div class="scenario-body">
-          <p class="muted" style="font-size:0.85rem; margin-bottom:1rem">需要安装 <code>himalaya</code> 技能，并配置邮件账号</p>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            帮我看一下今天有没有重要邮件，如果有的话给我总结一下
+          <p class="muted" style="font-size:0.83rem; margin-bottom:1rem">
+            <span class="lang-zh">需要 <code>himalaya</code> 技能</span>
+            <span class="lang-en">Requires <code>himalaya</code> skill</span>
+          </p>
+          <div class="lang-zh">
+            <div class="chat-bubble user"><div class="chat-label">你</div>帮我看一下今天有没有重要邮件，总结一下</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>今天共 12 封新邮件，3 封需要注意：<br><br>📌 <strong>boss@company.com</strong>（10:30）项目规划会议 — 明天下午 3 点，需要你准备上季度数据<br><br>📌 <strong>billing@stripe.com</strong>（09:15）账单提醒：$47.99 明天扣款<br><br>📌 <strong>github.com</strong>（08:22）你的 PR #142 有新评论</div>
+            <div class="chat-bubble user"><div class="chat-label">你</div>帮我回复第一封，说会准备好，会议没问题</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>已起草回复：<br><br>"Hi，收到！我会提前准备好上季度的数据，明天下午 3 点见。"<br><br>确认发送吗？</div>
           </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            好的，查了一下，今天共 12 封新邮件，其中 3 封需要注意：<br><br>
-            📌 <strong>来自：boss@company.com</strong>（10:30）<br>
-            主题：Q2 项目规划会议 — 明天下午 3 点，需要你准备上季度数据<br><br>
-            📌 <strong>来自：billing@stripe.com</strong>（09:15）<br>
-            账单提醒：$47.99 将在明天扣款<br><br>
-            📌 <strong>来自：github.com</strong>（08:22）<br>
-            你的 PR #142 有新评论，需要回复
-          </div>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            帮我回复第一封，说我会准备好，会议没问题
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            已起草回复，发送前确认一下：<br><br>
-            "Hi，收到！我会提前准备好上季度的数据，明天下午 3 点见。"<br><br>
-            确认发送吗？
+          <div class="lang-en">
+            <div class="chat-bubble user"><div class="chat-label">You</div>Check if I have any important emails today and summarize them</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>12 new emails today, 3 need your attention:<br><br>📌 <strong>boss@company.com</strong> (10:30) Q2 planning meeting — tomorrow 3pm, need last quarter data<br><br>📌 <strong>billing@stripe.com</strong> (09:15) Billing alert: $47.99 charges tomorrow<br><br>📌 <strong>github.com</strong> (08:22) New comment on your PR #142</div>
+            <div class="chat-bubble user"><div class="chat-label">You</div>Reply to the first one — say I'll be ready, meeting is fine</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>Draft reply:<br><br>"Hi, got it! I'll have last quarter's data ready. See you tomorrow at 3pm."<br><br>Send it?</div>
           </div>
         </div>
       </div>
 
+      <!-- Scenario 2 -->
       <div class="scenario">
         <div class="scenario-header">
           <span>📅</span>
-          <h4>场景二：日程管理与提醒</h4>
+          <h4><span class="lang-zh">场景二：日程与提醒</span><span class="lang-en">Scenario 2: Schedule &amp; Reminders</span></h4>
         </div>
         <div class="scenario-body">
-          <p class="muted" style="font-size:0.85rem; margin-bottom:1rem">需要安装 <code>apple-reminders</code> 技能</p>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            明天下午两点提醒我打电话给客户，备注一下：要聊续费的事
+          <p class="muted" style="font-size:0.83rem; margin-bottom:1rem"><span class="lang-zh">需要 <code>apple-reminders</code> 技能</span><span class="lang-en">Requires <code>apple-reminders</code> skill</span></p>
+          <div class="lang-zh">
+            <div class="chat-bubble user"><div class="chat-label">你</div>明天下午两点提醒我打电话给客户，备注：聊续费的事</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>✅ 已设置：明天 14:00 提醒「打电话给客户 — 聊续费的事」</div>
+            <div class="chat-bubble user"><div class="chat-label">你</div>帮我看一下本周还有什么待办</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>本周待办（5 项）：<br>✅ 已完成：提交报告、买牛奶<br>⏳ 未完成：<br>• 明天 14:00 — 打电话给客户<br>• 周四 — 健身房年卡续费<br>• 本周内 — 回复奶奶的微信</div>
           </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            ✅ 已设置：明天 14:00 提醒「打电话给客户 — 聊续费的事」
-          </div>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            帮我看一下本周还有什么待办
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            本周待办（共 5 项）：<br><br>
-            ✅ 已完成（2）：提交报告、买牛奶<br>
-            ⏳ 未完成（3）：<br>
-            • 明天 14:00 — 打电话给客户（续费）<br>
-            • 周四 — 健身房年卡续费<br>
-            • 本周内 — 回复奶奶的微信
+          <div class="lang-en">
+            <div class="chat-bubble user"><div class="chat-label">You</div>Remind me at 2pm tomorrow to call the client — about renewal</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>✅ Set: Tomorrow 14:00 — "Call client about renewal"</div>
+            <div class="chat-bubble user"><div class="chat-label">You</div>What else do I have on my todo list this week?</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>This week (5 items):<br>✅ Done: Submit report, buy milk<br>⏳ Pending:<br>• Tomorrow 2pm — Call client (renewal)<br>• Thursday — Renew gym membership<br>• This week — Reply to grandma</div>
           </div>
         </div>
       </div>
 
+      <!-- Scenario 3 -->
       <div class="scenario">
         <div class="scenario-header">
           <span>🔍</span>
-          <h4>场景三：信息搜索与总结</h4>
+          <h4><span class="lang-zh">场景三：视频总结</span><span class="lang-en">Scenario 3: Video Summary</span></h4>
         </div>
         <div class="scenario-body">
-          <p class="muted" style="font-size:0.85rem; margin-bottom:1rem">需要安装 <code>summarize</code> 技能</p>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            帮我总结一下这个 YouTube 视频的内容：https://youtube.com/watch?v=xxx
+          <p class="muted" style="font-size:0.83rem; margin-bottom:1rem"><span class="lang-zh">需要 <code>summarize</code> 技能</span><span class="lang-en">Requires <code>summarize</code> skill</span></p>
+          <div class="lang-zh">
+            <div class="chat-bubble user"><div class="chat-label">你</div>帮我总结这个 YouTube 视频：https://youtube.com/watch?v=xxx</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>正在转录和分析，稍等…<br><br>📺 视频总结（32 分钟）<br><strong>核心观点：</strong>AI 正在改变软件开发，未来"提示工程"将成为必备技能。<br><br><strong>3 个关键论点：</strong><br>1. 代码生成质量已超过大多数初级程序员<br>2. 程序员角色转向"审核和设计代码"<br>3. 用 AI 的人效率是不用的 10 倍<br><br>15:30 处有个很好的实际案例值得深入看</div>
           </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            正在转录和分析视频，稍等…<br><br>
-            📺 视频总结（时长 32 分钟）：<br><br>
-            <strong>核心观点：</strong>AI 正在改变软件开发的工作方式，未来 5 年内，"提示工程"将成为必备技能。<br><br>
-            <strong>3 个关键论点：</strong><br>
-            1. 代码生成质量已经超过大多数初级程序员<br>
-            2. 程序员的角色将从"写代码"转向"审核和设计代码"<br>
-            3. 学会用 AI 的人将比不用 AI 的人效率高 10 倍<br><br>
-            <strong>值得深入了解：</strong>视频 15:30 处讲了一个很好的实际案例
+          <div class="lang-en">
+            <div class="chat-bubble user"><div class="chat-label">You</div>Summarize this YouTube video for me: https://youtube.com/watch?v=xxx</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>Transcribing and analyzing, one moment…<br><br>📺 Video Summary (32 minutes)<br><strong>Core thesis:</strong> AI is transforming software development — "prompt engineering" will be a core skill.<br><br><strong>3 key points:</strong><br>1. Code generation already outperforms most junior devs<br>2. Developers shift from writing to reviewing and designing code<br>3. People using AI are 10x more productive<br><br>Worth watching the case study at 15:30</div>
           </div>
         </div>
       </div>
 
+      <!-- Scenario 4 -->
       <div class="scenario">
         <div class="scenario-header">
           <span>💻</span>
-          <h4>场景四：写代码与技术问题</h4>
+          <h4><span class="lang-zh">场景四：写代码</span><span class="lang-en">Scenario 4: Writing Code</span></h4>
         </div>
         <div class="scenario-body">
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            帮我写一个 Python 脚本，读取 CSV 文件，找出所有销售额超过 10000 的记录，导出到新文件
+          <div class="lang-zh">
+            <div class="chat-bubble user"><div class="chat-label">你</div>帮我写一个 Python 脚本，读取 CSV，找出销售额超过 10000 的记录，导出到新文件</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>已在工作区创建 <code>filter_sales.py</code>：<br><br><code>import pandas as pd<br>df = pd.read_csv('sales.csv')<br>high = df[df['sales'] > 10000]<br>high.to_csv('high_sales.csv', index=False)<br>print(f"共 {len(high)} 条记录")</code><br><br>运行：<code>python filter_sales.py</code>，要我帮你跑一下吗？</div>
           </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            已在你的工作区创建 <code>filter_sales.py</code>：<br><br>
-            <pre style="margin:0;padding:0;border:none;background:none"><code>import pandas as pd
-
-df = pd.read_csv('sales.csv')
-high_sales = df[df['sales'] > 10000]
-high_sales.to_csv('high_sales.csv', index=False)
-print(f"共找到 {len(high_sales)} 条记录")</code></pre>
-            <br>运行方式：<code>python filter_sales.py</code><br>
-            要不要我帮你直接跑一下？
+          <div class="lang-en">
+            <div class="chat-bubble user"><div class="chat-label">You</div>Write a Python script that reads a CSV and exports all records where sales exceed 10,000</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>Created <code>filter_sales.py</code> in your workspace:<br><br><code>import pandas as pd<br>df = pd.read_csv('sales.csv')<br>high = df[df['sales'] > 10000]<br>high.to_csv('high_sales.csv', index=False)<br>print(f"Found {len(high)} records")</code><br><br>Run with: <code>python filter_sales.py</code> — want me to run it now?</div>
           </div>
         </div>
       </div>
 
-      <div class="scenario">
-        <div class="scenario-header">
-          <span>🎵</span>
-          <h4>场景五：控制音乐播放</h4>
-        </div>
-        <div class="scenario-body">
-          <p class="muted" style="font-size:0.85rem; margin-bottom:1rem">需要安装 <code>spotify-player</code> 技能</p>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            放一些适合专注工作的音乐
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            🎵 已开始播放 Spotify 歌单「Deep Focus」— 轻音乐/器乐，适合专注。<br>当前：Brian Eno - Music for Airports
-          </div>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            声音太大了，小一点
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            🔉 音量已调低（从 70% → 40%）
-          </div>
-        </div>
-      </div>
-
+      <!-- Scenario 5 -->
       <div class="scenario">
         <div class="scenario-header">
           <span>⚙️</span>
-          <h4>场景六：定时自动任务（Cron）</h4>
+          <h4><span class="lang-zh">场景五：定时早报</span><span class="lang-en">Scenario 5: Scheduled Daily Brief</span></h4>
         </div>
         <div class="scenario-body">
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            每天早上 8 点，给我发一个今天的天气预报和日历日程总结
+          <div class="lang-zh">
+            <div class="chat-bubble user"><div class="chat-label">你</div>每天早上 8 点，给我发一个今天的天气预报和日历日程总结</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>✅ 已设置定时任务：每天 08:00<br><br>1. 查询今日天气（你的城市）<br>2. 读取今日日历事件<br>3. 通过 Telegram 发送给你<br><br>明天早上 8 点见！</div>
           </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            ✅ 已设置定时任务：每天 08:00 执行<br><br>
-            任务内容：<br>
-            1. 查询今日天气（你的城市）<br>
-            2. 读取今日日历事件<br>
-            3. 通过 Telegram 发送给你<br><br>
-            明天早上 8 点见！
-          </div>
-        </div>
-      </div>
-
-      <div class="scenario">
-        <div class="scenario-header">
-          <span>📂</span>
-          <h4>场景七：文件整理与处理</h4>
-        </div>
-        <div class="scenario-body">
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            我桌面上有一堆截图，帮我按月份整理到文件夹里
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            好的，扫描了桌面，发现 47 个截图文件（2024年9月 — 2025年3月）。<br><br>
-            计划：按月创建文件夹，将文件移入。<br><br>
-            确认执行吗？（这个操作可逆，文件只是移动，不会删除）
-          </div>
-          <div class="chat-bubble user">
-            <div class="chat-label">你</div>
-            确认
-          </div>
-          <div class="chat-bubble ai">
-            <div class="chat-label">AI</div>
-            ✅ 完成！<br>
-            • 2024-09/ — 8 个文件<br>
-            • 2024-10/ — 12 个文件<br>
-            • 2024-11/ — 7 个文件<br>
-            • 2024-12/ — 11 个文件<br>
-            • 2025-01/ — 5 个文件<br>
-            • 2025-02/ — 3 个文件<br>
-            • 2025-03/ — 1 个文件
+          <div class="lang-en">
+            <div class="chat-bubble user"><div class="chat-label">You</div>Every morning at 8am, send me a weather forecast and calendar summary for the day</div>
+            <div class="chat-bubble ai"><div class="chat-label">AI</div>✅ Scheduled task set: daily 08:00<br><br>1. Check today's weather for your city<br>2. Read today's calendar events<br>3. Send to you via Telegram<br><br>See you at 8am tomorrow!</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ ADVANCED ═══════════════════════════════ -->
+    <!-- ══════════════ ADVANCED ══════════════ -->
     <section id="advanced">
-      <h2>⚡ 进阶配置</h2>
-
-      <h3>配置心跳检查（Heartbeat）</h3>
-      <p>Heartbeat 是 AI 的"定时自检"机制，可以让它定期主动检查重要事项。</p>
-      <p>编辑工作区里的 <code>HEARTBEAT.md</code>：</p>
+      <h2>
+        <span class="lang-zh">⚡ 进阶配置</span>
+        <span class="lang-en">⚡ Advanced Configuration</span>
+      </h2>
+      <h3>Heartbeat</h3>
       <div style="position:relative">
-        <pre><code># HEARTBEAT.md
+        <pre><code><span class="lang-zh"># HEARTBEAT.md 示例
 
-## 每次心跳检查（每小时一次）：
+## 每次心跳检查：
+1. 有没有重要邮件未读
+2. 接下来 2 小时有没有日历事件
+3. 快下雨了提醒我带伞
 
-1. 检查是否有重要邮件未读
-2. 查看接下来 2 小时内有没有日历事件
-3. 如果快下雨了，提醒我带伞
+## 静默规则
+深夜 23:00 - 早上 08:00 不发消息</span><span class="lang-en"># HEARTBEAT.md example
 
-## 每天 8 点：
-- 发送今日天气 + 日程总结
+## Each heartbeat check:
+1. Any important unread emails
+2. Calendar events in the next 2 hours
+3. Remind me if it's going to rain
 
-## 注意：
-- 深夜 23:00 - 08:00 不要发消息打扰
-- 无事可报时直接跳过，不要发"没事"</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+## Silence rule
+No messages between 23:00 - 08:00</span></code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-
-      <h3>配置多个 Agent</h3>
-      <p>你可以配置多个 AI 助手，比如一个用 Telegram、一个接入飞书：</p>
+      <h3>Cron</h3>
       <div style="position:relative">
-        <pre><code># 查看当前所有 Agent
-openclaw agents list
-
-# 创建新的 Agent
-openclaw agents create my-second-agent
-
-# 指定 Agent 绑定到特定渠道（编辑配置文件）
-# ~/.openclaw/openclaw.json</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>openclaw cron list
+openclaw cron add --schedule "0 9 * * *" --task "<span class="lang-zh">检查今日邮件并发送摘要</span><span class="lang-en">Check emails and send summary</span>"
+openclaw cron remove &lt;ID&gt;</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-
-      <h3>使用 Cron 定时任务</h3>
+      <h3><span class="lang-zh">查看日志</span><span class="lang-en">View Logs</span></h3>
       <div style="position:relative">
-        <pre><code># 查看所有定时任务
-openclaw cron list
-
-# 创建定时任务（每天 9 点执行）
-openclaw cron add --schedule "0 9 * * *" --task "检查今日邮件并发送摘要"
-
-# 删除定时任务
-openclaw cron remove <任务ID></code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
-      </div>
-
-      <h3>查看日志</h3>
-      <div style="position:relative">
-        <pre><code># 实时查看 Gateway 日志
-openclaw logs
-
-# 查看特定日志文件
+        <pre><code>openclaw logs
 cat ~/.openclaw/logs/gateway.log</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
-
-      <h3>备份与恢复</h3>
+      <h3><span class="lang-zh">更新</span><span class="lang-en">Update</span></h3>
       <div style="position:relative">
-        <pre><code># 创建备份
-openclaw backup create
-
-# 查看备份列表
-openclaw backup list
-
-# 恢复备份
-openclaw backup restore <备份ID></code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
-      </div>
-
-      <h3>更新 OpenClaw</h3>
-      <div style="position:relative">
-        <pre><code># 更新到最新版本
-npm update -g openclaw
-
-# 或者
-openclaw gateway restart  # Gateway 会自动检查更新</code></pre>
-        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>npm update -g openclaw</code></pre>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ PITFALLS ═══════════════════════════════ -->
+    <!-- ══════════════ PITFALLS ══════════════ -->
     <section id="pitfalls">
-      <h2>💥 真实踩坑记录</h2>
-      <p>以下是实际使用中遇到的坑，很多初次部署都会中招，提前看完能省几小时。</p>
+      <h2>
+        <span class="lang-zh">💥 真实踩坑记录</span>
+        <span class="lang-en">💥 Real-World Pitfalls</span>
+      </h2>
+      <div class="lang-zh"><p>以下是实际使用中遇到的坑，很多初次部署都会中招，提前看完能省几小时。</p></div>
+      <div class="lang-en"><p>These are real pitfalls from production use. Many beginners hit them — reading this could save you hours.</p></div>
 
-      <div class="card" style="border-color: var(--danger); margin-bottom:1.25rem">
-        <h4 style="color:var(--danger)">🔴 坑 1：代理环境变量污染 Node.js（最常见！）</h4>
-        <p><strong>现象：</strong>AI 能启动，但 Claude API 调用一直报网络错误，或者内网服务莫名其妙被代理转发。</p>
-        <p><strong>根因：</strong>Mac 或 Linux 上设置了系统代理（Clash / V2Ray 等），Node.js 的 <code>fetch</code> 会自动走代理，但某些代理软件会拦截 API 调用。</p>
-        <p><strong>解法：</strong></p>
-        <div style="position:relative">
-          <pre><code># 启动 Gateway 前，先临时清除代理环境变量
-unset ALL_PROXY HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
-openclaw gateway restart
-
-# 或者写进启动脚本里，永久生效</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+      <div class="card" style="border-color:var(--danger)">
+        <h4 style="color:var(--danger)">🔴 <span class="lang-zh">坑 1：代理环境变量污染 Node.js（最常见！）</span><span class="lang-en">Pitfall 1: Proxy env vars poisoning Node.js (most common!)</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>AI 能启动，但 Claude API 调用一直报网络错误。</p>
+          <p><strong>根因：</strong>Mac 上设置了 Clash / V2Ray 等代理，Node.js 的 fetch 会自动走代理，但某些代理软件会拦截 API 调用。</p>
         </div>
-        <p class="muted" style="font-size:0.85rem">💡 如果你想让 Claude API 走代理，在 <code>~/.openclaw/openclaw.json</code> 里单独配置代理地址，而不是依赖系统环境变量。</p>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> AI starts but Claude API calls always fail with network errors.</p>
+          <p><strong>Root cause:</strong> System proxy (Clash / V2Ray) is set, and Node.js fetch automatically routes through it, but the proxy intercepts API calls.</p>
+        </div>
+        <div style="position:relative">
+          <pre><code>unset ALL_PROXY HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
+openclaw gateway restart</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
       </div>
 
-      <div class="card" style="border-color: var(--danger); margin-bottom:1.25rem">
-        <h4 style="color:var(--danger)">🔴 坑 2：大文件操作导致 AI 陷入死循环</h4>
-        <p><strong>现象：</strong>让 AI 写一个很长的文件，结果它一直在"思考"、发重复消息，甚至把整个文件内容塞进回复里刷屏。</p>
-        <p><strong>根因：</strong>AI 的 write 工具在写入超大文件（>5000字）时，会把内容塞进模型 token 输出，撑爆 context window，触发 compaction，然后 AI 重新启动重复执行。</p>
-        <p><strong>解法：大文件必须用 shell 写，不要用 AI 自带的 write 工具。</strong></p>
+      <div class="card" style="border-color:var(--danger)">
+        <h4 style="color:var(--danger)">🔴 <span class="lang-zh">坑 2：大文件操作导致 AI 死循环刷屏</span><span class="lang-en">Pitfall 2: Large file writes cause AI to loop and spam</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>让 AI 写一个很长的文件，结果它一直在"思考"、发重复消息，把文件内容塞进回复刷屏。</p>
+          <p><strong>根因：</strong>write 工具在写入超大文件（&gt;5000字）时，会把内容塞进模型 token 输出，撑爆 context，触发 compaction，然后 AI 重复执行。</p>
+          <p><strong>解法：大文件必须用 shell 写，不要用 AI 的 write 工具。</strong></p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> You ask AI to write a long file — it loops, sends duplicate messages, and floods your chat with content.</p>
+          <p><strong>Root cause:</strong> The write tool for files &gt;5000 chars blows the context window, triggers compaction, and AI re-runs.</p>
+          <p><strong>Fix: For large files, always use shell commands — not the write tool.</strong></p>
+        </div>
         <div style="position:relative">
-          <pre><code># 正确做法：让 AI 通过 exec 用 shell 命令写文件
+          <pre><code><span class="lang-zh"># ✅ 正确：通过 shell 写大文件</span><span class="lang-en"># ✅ Correct: write large files via shell</span>
 cat > /path/to/bigfile.txt << 'EOF'
-...文件内容...
+...content...
 EOF
 
-# 或者让 AI 分块写入
-# 错误做法：AI 直接 write 10000 字的文件 → 大概率出问题</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<span class="lang-zh"># ❌ 错误：AI 直接 write 超长内容 → 大概率出问题</span><span class="lang-en"># ❌ Wrong: AI direct-writes 10000 chars → almost certainly breaks</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
-        <h4 style="color:var(--warn)">🟡 坑 3：Gateway restart 会断所有连接</h4>
-        <p><strong>现象：</strong>执行 <code>openclaw gateway restart</code> 后，Telegram/飞书 等频道的 AI 连接断开，几秒到几十秒内无法回复。</p>
-        <p><strong>解法：</strong>重启前先告诉 AI 让它通知你，等你做好心理准备再重启。重启后等 10-30 秒再发消息测试。</p>
+      <div class="card" style="border-color:var(--warn)">
+        <h4 style="color:var(--warn)">🟡 <span class="lang-zh">坑 3：Gateway restart 会断所有连接</span><span class="lang-en">Pitfall 3: Gateway restart drops all connections</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>执行 <code>openclaw gateway restart</code> 后，Telegram/飞书 的 AI 连接断开，几十秒内无法回复。</p>
+          <p><strong>解法：</strong>重启前告知 AI 让它通知你，等你做好心理准备再重启。重启后等 10-30 秒再测试。</p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> After <code>openclaw gateway restart</code>, your Telegram/Feishu AI goes silent for up to 30 seconds.</p>
+          <p><strong>Fix:</strong> Tell the AI before restarting so it can warn you. Wait 10–30 seconds after restarting before testing.</p>
+        </div>
         <div class="alert warn" style="margin-top:0.5rem">
           <span class="alert-icon">⚠️</span>
-          <p>如果你在进行重要对话，尽量避免在中途重启 Gateway。配置变更可以等对话结束后再重启。</p>
+          <p class="lang-zh">在进行重要对话时，尽量避免在中途重启 Gateway。配置变更等对话结束后再重启。</p>
+          <p class="lang-en">Avoid restarting Gateway mid-conversation. Save config changes and restart after the conversation ends.</p>
         </div>
       </div>
 
-      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
-        <h4 style="color:var(--warn)">🟡 坑 4：Cron 任务写了≠真的在跑</h4>
-        <p><strong>现象：</strong>让 AI 帮你设置定时任务（比如每天 8 点发早报），AI 说"已设置"，但实际上到点什么都没发。</p>
-        <p><strong>根因：</strong>AI 可能只是写了配置文件，但没有验证 Gateway 是否真正加载了这个 cron。另外，cron 任务的输出默认回显到会话里，而不是发到 Telegram。</p>
-        <p><strong>解法：</strong></p>
+      <div class="card" style="border-color:var(--warn)">
+        <h4 style="color:var(--warn)">🟡 <span class="lang-zh">坑 4：Cron 任务写了≠真的在跑</span><span class="lang-en">Pitfall 4: Cron "created" ≠ actually running</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>让 AI 设置定时任务，AI 说"已设置"，但到点什么都没发。</p>
+          <p><strong>根因：</strong>AI 可能只写了配置文件，没验证 Gateway 是否真正加载了。另外，cron 输出默认回显到会话而非 Telegram。</p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> AI says "cron task created" but nothing happens at the scheduled time.</p>
+          <p><strong>Root cause:</strong> The config may have been written without verifying Gateway loaded it. Also, cron output defaults to session echo, not your Telegram.</p>
+        </div>
         <div style="position:relative">
-          <pre><code># 设置完 cron 后，先验证它真的在运行
-openclaw cron list
-
-# 手动触发一次测试
-openclaw cron run <任务ID>
-
-# 确认输出方向：是发到 Telegram 还是回显到当前会话？
-# 在任务里明确指定 delivery channel</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          <pre><code>openclaw cron list               # <span class="lang-zh">确认列表里有任务</span><span class="lang-en">Verify it appears</span>
+openclaw cron run &lt;task-id&gt;     # <span class="lang-zh">手动触发一次测试</span><span class="lang-en">Manually trigger to test</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
-        <h4 style="color:var(--warn)">🟡 坑 5：Cloudflare Tunnel 连不上（QUIC 被代理干扰）</h4>
-        <p><strong>现象：</strong>用 Cloudflare Tunnel 做内网穿透，连接一直失败或不稳定。</p>
-        <p><strong>根因：</strong>Mac 上的系统代理会干扰 QUIC 协议，而 <code>cloudflared</code> 默认用 QUIC。</p>
-        <p><strong>解法：强制用 HTTP/2，同时清空代理环境变量。</strong></p>
+      <div class="card" style="border-color:var(--warn)">
+        <h4 style="color:var(--warn)">🟡 <span class="lang-zh">坑 5：Cloudflare Tunnel QUIC 被代理干扰</span><span class="lang-en">Pitfall 5: Cloudflare Tunnel QUIC blocked by proxy</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>用 Cloudflare Tunnel 做内网穿透，连接一直失败或不稳定。</p>
+          <p><strong>根因：</strong>Mac 系统代理会干扰 QUIC 协议，而 <code>cloudflared</code> 默认用 QUIC。</p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> Cloudflare Tunnel keeps failing or is unstable.</p>
+          <p><strong>Root cause:</strong> macOS system proxy interferes with the QUIC protocol that <code>cloudflared</code> uses by default.</p>
+        </div>
         <div style="position:relative">
-          <pre><code># 启动 cloudflared 时加参数
-cloudflared tunnel --protocol http2 run
-
-# 如果用 launchd / systemd 启动，在服务配置里加环境变量
-EnvironmentVariables:
-  ALL_PROXY: ""
-  HTTPS_PROXY: ""</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          <pre><code>cloudflared tunnel --protocol http2 run</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
-        <h4 style="color:var(--accent)">🟣 坑 6：AI 心跳深夜骚扰</h4>
-        <p><strong>现象：</strong>凌晨 2 点收到 AI 发来的天气通知……</p>
-        <p><strong>根因：</strong>Heartbeat 心跳任务没有配置时间限制，半夜也在检查然后"善意提醒"你。</p>
-        <p><strong>解法：在 <code>HEARTBEAT.md</code> 里明确写静默时段。</strong></p>
+      <div class="card" style="border-color:var(--accent)">
+        <h4 style="color:var(--accent)">🟣 <span class="lang-zh">坑 6：AI 心跳深夜骚扰</span><span class="lang-en">Pitfall 6: AI heartbeat wakes you at 2am</span></h4>
+        <div class="lang-zh"><p><strong>现象：</strong>凌晨 2 点收到 AI 发来的天气通知……Heartbeat 没有配置时间限制。</p></div>
+        <div class="lang-en"><p><strong>Symptom:</strong> AI sends you a weather notification at 2am… Heartbeat has no time restriction.</p></div>
         <div style="position:relative">
-          <pre><code># 在 HEARTBEAT.md 里加这一条：
-## 静默规则
-深夜 23:00 - 早上 08:00，无论发现什么，都不发消息。
-只有极端紧急（系统崩溃、安全警报）才可以例外。</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          <pre><code><span class="lang-zh"># HEARTBEAT.md 加上这条：
+深夜 23:00 - 早上 08:00，无论发现什么，都不发消息</span><span class="lang-en"># Add to HEARTBEAT.md:
+Between 23:00 - 08:00, do NOT send any messages, regardless of findings</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
-        <h4 style="color:var(--accent)">🟣 坑 7：GitHub Pages 推上去没更新（CDN 缓存）</h4>
-        <p><strong>现象：</strong>已经 git push 了，但浏览器打开还是旧版本。</p>
-        <p><strong>原因：</strong>GitHub Pages 用 CDN 缓存，更新可能有 1-5 分钟延迟，浏览器本地也有缓存。</p>
-        <p><strong>解法：</strong></p>
-        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem">
-          <li>强制刷新：Mac 上按 <kbd>Cmd + Shift + R</kbd>，Windows 按 <kbd>Ctrl + Shift + R</kbd></li>
-          <li>等 2-5 分钟后再刷，CDN 缓存通常会自动更新</li>
-          <li>也可以开无痕窗口访问，排除本地缓存</li>
-        </ul>
+      <div class="card" style="border-color:var(--accent)">
+        <h4 style="color:var(--accent)">🟣 <span class="lang-zh">坑 7：飞书发文件只收到路径字符串</span><span class="lang-en">Pitfall 7: Feishu "file send" just sends a path string</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>让 AI 把文件发到飞书，收到的只是一串文件路径，不是真正的文件。</p>
+          <p><strong>根因：</strong>message 工具的 filePath 参数在飞书渠道不生效——它只是把路径当文本发出去。</p>
+          <p><strong>解法：</strong>需要让 AI 调用飞书原生 API，先 <code>POST /im/v1/files</code> 上传获取 file_key，再通过消息接口发送。</p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> You ask AI to send a file on Feishu — recipient receives a file path string, not the actual file.</p>
+          <p><strong>Root cause:</strong> The message tool's <code>filePath</code> param doesn't work for Feishu — it just sends the path as text.</p>
+          <p><strong>Fix:</strong> The AI must call the Feishu native API: <code>POST /im/v1/files</code> to get a file_key, then send via message API.</p>
+        </div>
       </div>
 
-      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
-        <h4 style="color:var(--accent)">🟣 坑 8：飞书渠道发文件用错方法</h4>
-        <p><strong>现象：</strong>让 AI 把文件发到飞书，收到的只是一个文件路径字符串，不是真正的文件。</p>
-        <p><strong>根因：</strong>OpenClaw 的 message 工具的 filePath 参数在飞书渠道不生效，它只会把路径当文本发出去。</p>
-        <p><strong>解法：</strong>需要让 AI 调用飞书原生 API 上传文件，流程是：先 <code>POST /im/v1/files</code> 上传获取 file_key，再通过消息接口发送。这个问题只在飞书渠道存在，Telegram 正常。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1.25rem">
-        <h4>⚪ 坑 9：context 越来越长，AI 变慢变贵</h4>
-        <p><strong>现象：</strong>和 AI 聊了几天后，它的回复越来越慢，API 费用也开始增加。</p>
-        <p><strong>原因：</strong>每次对话都会携带历史上下文，时间长了 context window 越来越大，每次调用的 token 消耗也越来越多。</p>
-        <p><strong>解法：</strong></p>
-        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem">
-          <li>OpenClaw 默认开启 context pruning（自动修剪），不用手动管理</li>
-          <li>长任务（处理大文档、批量操作）用子进程处理，不在主对话里堆积</li>
-          <li>定期重新开一个对话，而不是在一个对话里聊几十条</li>
-        </ul>
+      <div class="card">
+        <h4>⚪ <span class="lang-zh">坑 8：Context 越来越长，AI 变慢变贵</span><span class="lang-en">Pitfall 8: Context grows — AI gets slower and costs more</span></h4>
+        <div class="lang-zh">
+          <p><strong>现象：</strong>聊了几天后，AI 回复越来越慢，API 费用开始增加。</p>
+          <p><strong>原因：</strong>每次对话携带历史 context，时间长了 token 消耗越来越多。</p>
+          <p><strong>解法：</strong>OpenClaw 默认有 context pruning，一般不用手动处理。长任务用子进程，定期开新对话。</p>
+        </div>
+        <div class="lang-en">
+          <p><strong>Symptom:</strong> After a few days, AI responses get slower and API costs creep up.</p>
+          <p><strong>Cause:</strong> Every conversation carries growing history context — more tokens each time.</p>
+          <p><strong>Fix:</strong> OpenClaw has context pruning on by default. For long tasks, use subprocesses. Start fresh conversations periodically.</p>
+        </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ TIPS ═══════════════════════════════ -->
+    <!-- ══════════════ TIPS ══════════════ -->
     <section id="tips">
-      <h2>💡 实战小技巧</h2>
-      <p>这些是用了一段时间后慢慢总结出来的使用心法，能让你的体验好很多。</p>
+      <h2>
+        <span class="lang-zh">💡 实战小技巧</span>
+        <span class="lang-en">💡 Pro Tips</span>
+      </h2>
+      <div class="lang-zh"><p>用了一段时间后总结出来的使用心法，能让体验好很多。</p></div>
+      <div class="lang-en"><p>Lessons learned from months of daily use — these make a real difference.</p></div>
 
-      <h3>🗣 怎么和 AI 说话更高效</h3>
+      <h3><span class="lang-zh">🗣 怎么和 AI 说话更高效</span><span class="lang-en">🗣 Talk to AI More Effectively</span></h3>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>直接说结果，不要说步骤</h4>
-        <p>❌ 「先打开邮件，然后找一下今天的邮件，然后把重要的列出来」</p>
-        <p>✅ 「帮我看今天有没有重要邮件，总结一下」</p>
-        <p class="muted" style="font-size:0.85rem">AI 会自己决定怎么做，你只需要告诉它你想要什么结果。</p>
+      <div class="card">
+        <h4><span class="lang-zh">直接说结果，不要说步骤</span><span class="lang-en">Describe results, not steps</span></h4>
+        <div class="lang-zh">
+          <p>❌ 「先打开邮件，然后找今天的，然后把重要的列出来」</p>
+          <p>✅ 「帮我看今天有没有重要邮件，总结一下」</p>
+          <p class="muted" style="font-size:0.85rem">AI 会自己决定怎么做，你只需要告诉它你想要什么结果。</p>
+        </div>
+        <div class="lang-en">
+          <p>❌ "Open email, then find today's emails, then list the important ones"</p>
+          <p>✅ "Check if I have any important emails today and summarize them"</p>
+          <p class="muted" style="font-size:0.85rem">AI decides how to do it — you just define the outcome you want.</p>
+        </div>
       </div>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>危险操作可以让 AI 先列计划</h4>
-        <p>对于删文件、发消息、修改配置这类操作，可以先说：</p>
-        <p>「先告诉我你打算怎么做，别直接执行」</p>
-        <p>AI 会先给你一个计划，你确认后再让它执行，避免误操作。</p>
+      <div class="card">
+        <h4><span class="lang-zh">危险操作：先让 AI 列计划再执行</span><span class="lang-en">Risky actions: plan first, then execute</span></h4>
+        <div class="lang-zh">
+          <p>对于删文件、发消息、修改配置这类操作，可以先说：「先告诉我你打算怎么做，别直接执行」</p>
+          <p>AI 会给你一个计划，你确认后再让它执行。</p>
+        </div>
+        <div class="lang-en">
+          <p>For deleting files, sending messages, or editing configs, say: "Tell me what you plan to do first, don't execute yet"</p>
+          <p>AI gives you a plan — you confirm, then it executes.</p>
+        </div>
       </div>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>让 AI 记住你的偏好</h4>
-        <p>直接说「记住：我不喜欢 xxx」或「以后帮我做 xxx 的时候，记得 yyy」，AI 会把重要偏好写进记忆文件，下次对话继续有效。</p>
-        <p class="muted" style="font-size:0.85rem">比如：「记住我用的是上海证券账户，以后查股票默认用这个」</p>
+      <div class="card">
+        <h4><span class="lang-zh">让 AI 记住你的偏好</span><span class="lang-en">Let AI remember your preferences</span></h4>
+        <div class="lang-zh">
+          <p>直接说「记住：我不喜欢 xxx」或「以后帮我做 xxx 时，记得 yyy」，AI 会把重要偏好写进记忆文件，下次对话继续有效。</p>
+          <p class="muted" style="font-size:0.85rem">比如：「记住我用的是上海证券账户，以后查股票默认用这个」</p>
+        </div>
+        <div class="lang-en">
+          <p>Say "Remember: I don't like xxx" or "When you do xxx for me, always yyy" — AI writes this to memory and it persists across sessions.</p>
+          <p class="muted" style="font-size:0.85rem">e.g. "Remember I use Fidelity — always use that for stock queries"</p>
+        </div>
       </div>
 
-      <h3>⚙️ 配置技巧</h3>
+      <h3><span class="lang-zh">⚙️ 配置技巧</span><span class="lang-en">⚙️ Configuration Tips</span></h3>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>善用 SOUL.md 定义 AI 的边界</h4>
-        <p>不想让 AI 主动推送某类信息？不想它深夜打扰你？这些都可以写进 <code>SOUL.md</code> 或 <code>AGENTS.md</code>：</p>
+      <div class="card">
+        <h4><span class="lang-zh">不同任务用不同模型</span><span class="lang-en">Match the model to the task</span></h4>
+        <div class="lang-zh">
+          <p>日常聊天用 <strong>Sonnet</strong>，深度分析/研究报告用 <strong>Opus</strong>，批量简单任务用 <strong>Haiku</strong>。</p>
+          <p>可以直接告诉 AI：「这个任务用 Opus 做，要深度分析」，AI 会切换。</p>
+        </div>
+        <div class="lang-en">
+          <p>Daily chat → <strong>Sonnet</strong>. Deep research/analysis → <strong>Opus</strong>. Bulk simple tasks → <strong>Haiku</strong>.</p>
+          <p>Just tell the AI: "Use Opus for this, I need deep analysis" and it will switch.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4><span class="lang-zh">定期让 AI 整理记忆</span><span class="lang-en">Periodically ask AI to consolidate memory</span></h4>
+        <div class="lang-zh">
+          <p>时间长了，<code>memory/</code> 目录会积累大量日记文件。定期让 AI 做记忆整理：</p>
+          <p>「帮我整理最近 2 周的记忆日记，把重要的事情提炼到 MEMORY.md，删掉过时的」</p>
+        </div>
+        <div class="lang-en">
+          <p>Over time, the <code>memory/</code> directory fills with daily logs. Ask AI periodically:</p>
+          <p>"Consolidate the last 2 weeks of memory logs into MEMORY.md, remove outdated entries"</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4><span class="lang-zh">用 SOUL.md 定义 AI 的边界</span><span class="lang-en">Use SOUL.md to set clear boundaries</span></h4>
         <div style="position:relative">
-          <pre><code># 在 AGENTS.md 里写：
-
-## 禁止主动推送
+          <pre><code><span class="lang-zh"># AGENTS.md 里写：
 - 不要主动推荐任何产品或功能
-- 不要在没有被问到的情况下评价我的决定
-- 不要深夜（23:00-08:00）发消息，哪怕有定时任务触发</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+- 不要在没被问到时评价我的决定
+- 不要深夜（23:00-08:00）发消息</span><span class="lang-en"># In AGENTS.md:
+- Never proactively recommend products or features
+- Don't comment on my decisions unless asked
+- No messages between 23:00–08:00 under any circumstances</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>不同任务用不同模型</h4>
-        <p>你可以在对话中临时切换模型，不需要改配置文件：</p>
+      <h3><span class="lang-zh">🛡 安全与隐私</span><span class="lang-en">🛡 Security &amp; Privacy</span></h3>
+
+      <div class="card">
+        <h4><span class="lang-zh">设置白名单，防止陌生人使用你的 AI</span><span class="lang-en">Set an allowlist — don't let strangers use your AI</span></h4>
         <div style="position:relative">
-          <pre><code># 在聊天里直接发这个来临时切换（部分渠道支持）
-/model claude-opus-4-6
-
-# 或者告诉 AI：
-「这个任务用 Opus 做，要深度分析」
-「这个用 Haiku 就行，快速回答」</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        </div>
-        <p class="muted" style="font-size:0.85rem">💡 日常聊天用 Sonnet，写研究报告/复杂推理用 Opus，批量简单任务用 Haiku。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>用 Heartbeat 做轻量级监控</h4>
-        <p>心跳检查不只是"没事汇报"，可以用来做有意义的监控：</p>
-        <div style="position:relative">
-          <pre><code># HEARTBEAT.md 示例 — 有价值的检查
-## 每次心跳（每小时）：
-1. 检查磁盘空间，如果不足 10GB，提醒我
-2. 检查 Gateway 日志，如果有 ERROR 级别日志，告诉我
-3. 检查天气，如果接下来 3 小时要下雨，提醒我带伞
-
-## 每天 8:30：
-- 今日日程 + 未完成的提醒事项
-
-## 每周一 9:00：
-- 上周的 AI 使用统计（粗略估算）</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          <pre><code><span class="lang-zh"># 先用 @userinfobot 获取你的 Telegram ID，然后：</span><span class="lang-en"># Get your Telegram ID from @userinfobot, then:</span>
+openclaw config set channels.telegram.allowedUsers '["YOUR_ID"]'</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>定期让 AI 整理记忆</h4>
-        <p>时间长了，<code>memory/</code> 目录下会积累大量日记文件。可以定期让 AI 做一次"记忆整理"：</p>
-        <p>「帮我整理一下最近 2 周的记忆日记，把重要的事情提炼到 MEMORY.md 里，删掉过时的内容」</p>
-        <p class="muted" style="font-size:0.85rem">这样 AI 的"长期记忆"会越来越精准，而不是一堆流水账。</p>
-      </div>
-
-      <h3>🛡 安全与隐私</h3>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>设置白名单，防止陌生人使用你的 AI</h4>
-        <p>Telegram Bot 默认公开，任何知道 Bot 用户名的人都能和它说话。强烈建议配置白名单：</p>
-        <div style="position:relative">
-          <pre><code># 先获取你自己的 Telegram ID（发消息给 @userinfobot）
-# 然后设置白名单，只允许你自己
-openclaw config set channels.telegram.allowedUsers '["你的数字ID"]'
-
-# 多人共用（比如家庭）
-openclaw config set channels.telegram.allowedUsers '["ID1","ID2"]'</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+      <div class="card">
+        <h4><span class="lang-zh">群聊 AI 要设置触发条件</span><span class="lang-en">Set trigger conditions for group chat AI</span></h4>
+        <div class="lang-zh">
+          <p>把 AI 接入群聊后，建议配置为只在 <strong>@提及</strong> 或有问句时才回复，否则它会回复每一条消息。</p>
         </div>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>不要让 AI 处理真正敏感的内容</h4>
-        <p>AI 的对话内容会发送到 Claude 的 API 服务器（Anthropic）。虽然 Anthropic 有隐私保护，但对于银行密码、身份证号、医疗记录这类信息，建议直接本地处理，不要让 AI 经手。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>群聊里的 AI 要设置触发条件</h4>
-        <p>如果把 AI 接入群聊（Discord / 飞书群等），默认它可能会回复每一条消息，影响群聊氛围。</p>
-        <p>建议配置为：只在 <strong>@提及</strong> 或 <strong>包含问句/关键词</strong> 时才回复，其余时候保持静默。</p>
+        <div class="lang-en">
+          <p>When adding AI to group chats, configure it to only respond when <strong>@mentioned</strong> or when there's a direct question — otherwise it replies to everything.</p>
+        </div>
         <div style="position:relative">
-          <pre><code># 在 AGENTS.md 里写：
+          <pre><code><span class="lang-zh"># 在 AGENTS.md 里写：
 ## 群聊行为规则
 - 只在被 @ 或有人直接提问时回复
-- 闲聊、表情包、纯分享内容：不回复
-- 别人已经回答了的问题：不重复回答
-- 不要主动插话，除非你能提供其他人没有的信息</code></pre>
-          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+- 闲聊/表情包/分享内容：不回复
+- 别人已经回答了：不重复</span><span class="lang-en"># In AGENTS.md:
+## Group chat rules
+- Only respond when @mentioned or directly questioned
+- Casual chat, memes, link shares: stay silent
+- If someone already answered: don't repeat</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
       </div>
 
-      <h3>🚀 进阶玩法</h3>
+      <h3><span class="lang-zh">🚀 进阶玩法</span><span class="lang-en">🚀 Power User Moves</span></h3>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>让 AI 自己写技能（Skills）</h4>
-        <p>如果你有特殊需求，可以直接让 AI 帮你写一个自定义技能：</p>
-        <p>「帮我创建一个技能，能查询京东快递物流信息，只需要传入单号」</p>
-        <p>AI 会生成 <code>SKILL.md</code> 和相关脚本，放到技能目录后立即生效。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>多 Agent 分工</h4>
-        <p>你可以配置多个 AI 实例，各司其职：</p>
-        <div class="card-grid" style="margin:0.75rem 0 0">
-          <div class="card" style="margin:0; padding:1rem">
-            <h4 style="font-size:0.9rem; color:var(--accent2)">主助手（Telegram）</h4>
-            <p>日常对话、文件处理、代码帮助</p>
-          </div>
-          <div class="card" style="margin:0; padding:1rem">
-            <h4 style="font-size:0.9rem; color:var(--accent2)">工作助手（飞书）</h4>
-            <p>处理工作文档、飞书通知、会议纪要</p>
-          </div>
-          <div class="card" style="margin:0; padding:1rem">
-            <h4 style="font-size:0.9rem; color:var(--accent2)">群聊机器人（Discord）</h4>
-            <p>回答公开问题、提供信息查询</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>用子进程处理重活</h4>
-        <p>遇到需要很长时间的任务（写几千行代码、处理大量数据、深度研究），可以让 AI 启动一个子进程在后台处理：</p>
-        <p>「这个任务可能要跑很久，帮我在后台处理，完成后通知我结果」</p>
-        <p class="muted" style="font-size:0.85rem">这样主对话不会被卡住，你可以继续做其他事情。</p>
+      <div class="card">
+        <h4><span class="lang-zh">让 AI 自己写技能（Skills）</span><span class="lang-en">Let AI write custom Skills for you</span></h4>
+        <div class="lang-zh"><p>如果你有特殊需求，可以直接让 AI 帮你写一个自定义技能：「帮我创建一个技能，能查询京东快递物流信息，只需要传入单号」</p></div>
+        <div class="lang-en"><p>For custom needs, just ask: "Create a skill that can track JD.com deliveries given a tracking number"</p></div>
       </div>
 
       <div class="card">
-        <h4>建立你自己的使用习惯</h4>
-        <p>最后也是最重要的一点：OpenClaw 是高度可定制的，最终使用效果取决于你怎么"培养"它。</p>
-        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem; margin-top:0.5rem">
-          <li>遇到 AI 表现不好的地方，直接说「这个不对，下次应该 xxx」，AI 会记住</li>
-          <li>定期更新 <code>SOUL.md</code> 和 <code>USER.md</code>，让 AI 更了解你</li>
-          <li>把你的工作流程告诉 AI，它会帮你自动化重复的部分</li>
-          <li>发现好的技能就安装，用不到的技能就移除，保持轻量</li>
+        <h4><span class="lang-zh">用子进程处理重活</span><span class="lang-en">Use subprocesses for heavy tasks</span></h4>
+        <div class="lang-zh"><p>遇到需要很长时间的任务（写几千行代码、处理大量数据），可以说：「这个任务可能要跑很久，帮我在后台处理，完成后通知我结果」这样主对话不会被卡住。</p></div>
+        <div class="lang-en"><p>For long tasks (writing thousands of lines of code, processing large datasets), say: "This might take a while — handle it in the background and notify me when done." Your main conversation stays unblocked.</p></div>
+      </div>
+
+      <div class="card">
+        <h4><span class="lang-zh">建立自己的使用习惯</span><span class="lang-en">Build your own usage habits</span></h4>
+        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem; margin-top:0.5rem; line-height:2">
+          <li class="lang-zh">遇到 AI 表现不好的地方，直接说「这个不对，下次应该 xxx」，AI 会记住</li>
+          <li class="lang-en">When AI gets something wrong, say "That's not right — next time do xxx" and it will remember</li>
+          <li class="lang-zh">定期更新 SOUL.md 和 USER.md，让 AI 更了解你</li>
+          <li class="lang-en">Regularly update SOUL.md and USER.md as your preferences evolve</li>
+          <li class="lang-zh">把你的工作流程告诉 AI，它会帮你自动化重复的部分</li>
+          <li class="lang-en">Describe your workflows — AI will help automate the repetitive parts</li>
+          <li class="lang-zh">发现好的技能就安装，用不到的就移除，保持轻量</li>
+          <li class="lang-en">Install useful skills, remove unused ones — keep it lean</li>
         </ul>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════ FAQ ═══════════════════════════════ -->
+    <!-- ══════════════ FAQ ══════════════ -->
     <section id="faq">
-      <h2>❓ 常见问题</h2>
+      <h2>❓ FAQ</h2>
 
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: AI 一直没有回复，怎么办？</h4>
-        <p>先检查 Gateway 是否在运行：<code>openclaw gateway status</code><br>
-        再检查日志是否有错误：<code>openclaw logs</code><br>
-        如果 API Key 有问题，会在日志里看到 <code>401 Unauthorized</code>。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: AI 回复太慢了</h4>
-        <p>可以换用更快的模型：</p>
-        <pre style="margin:0.5rem 0"><code>openclaw config set agents.defaults.model.primary "anthropic/claude-haiku-3-5"</code></pre>
-        <p>Haiku 响应速度比 Sonnet 快约 3-5 倍，但能力稍弱一些。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: API 费用怎么控制？</h4>
-        <p>1. 在 Anthropic Console 设置每月用量上限<br>
-        2. 日常使用 Sonnet 或 Haiku，只在需要深度分析时用 Opus<br>
-        3. 用 <code>openclaw models scan</code> 查看各模型费用</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: AI 会记住我说过的话吗？</h4>
-        <p>会。OpenClaw 有持久记忆系统：<br>
-        • <strong>短期</strong>：每次对话上下文（当前会话内记住）<br>
-        • <strong>长期</strong>：重要事情会写入 <code>MEMORY.md</code> 和 <code>memory/</code> 目录<br>
-        你也可以直接说「记住：我的生日是 X 月 X 日」，AI 会主动存档。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: 如何让 AI 帮我执行电脑上的命令？</h4>
-        <p>OpenClaw 默认允许 AI 执行 Shell 命令，但会要求你确认危险操作。直接告诉 AI 你想做什么就行，比如：「帮我查一下这台电脑的磁盘使用情况」。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: 数据安全吗？AI 会上传我的文件吗？</h4>
-        <p>OpenClaw 本身不会上传你的文件。但 AI 对话内容会发送到 Anthropic 的 API（Claude），所以敏感信息最好不要让 AI 处理。AI 执行命令时也不会主动上传文件，除非你明确要求。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: 电脑关机了，AI 还能工作吗？</h4>
-        <p>不能。OpenClaw 运行在你的电脑上，关机后 Gateway 停止，AI 就无法响应了。如果需要 24/7 可用，考虑部署到 VPS（云服务器）上，比如阿里云、腾讯云、DigitalOcean 等。</p>
-      </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h4>Q: 国内访问 Claude API 需要代理吗？</h4>
-        <p>是的，Claude API 在中国大陆需要代理才能访问。可以配置系统代理，或者使用 Clash、V2Ray 等工具，确保 Node.js 进程能走代理。<br>
-        设置方法：</p>
-        <pre style="margin:0.5rem 0"><code>export HTTPS_PROXY=http://127.0.0.1:7890
-openclaw gateway restart</code></pre>
+      <div class="card">
+        <h4>Q: <span class="lang-zh">AI 一直没有回复，怎么办？</span><span class="lang-en">AI isn't responding — what do I do?</span></h4>
+        <div style="position:relative">
+          <pre><code>openclaw gateway status
+openclaw logs           # <span class="lang-zh">查错误，401=API Key 有问题</span><span class="lang-en">Check for errors, 401=API Key issue</span>
+openclaw doctor</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
       </div>
 
       <div class="card">
-        <h4>Q: 遇到问题去哪里求助？</h4>
+        <h4>Q: <span class="lang-zh">AI 回复太慢了</span><span class="lang-en">AI responses are too slow</span></h4>
+        <div style="position:relative">
+          <pre><code>openclaw config set agents.defaults.model.primary "anthropic/claude-haiku-3-5"
+<span class="lang-zh"># Haiku 比 Sonnet 快 3-5 倍，能力稍弱</span><span class="lang-en"># Haiku is 3-5x faster than Sonnet, slightly less capable</span></code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Q: <span class="lang-zh">API 费用怎么控制？</span><span class="lang-en">How do I control API costs?</span></h4>
+        <div class="lang-zh">
+          <p>1. 在 Anthropic Console 设置每月用量上限<br>2. 日常用 Sonnet / Haiku，只有深度分析时用 Opus<br>3. <code>openclaw models scan</code> 查看各模型费用</p>
+        </div>
+        <div class="lang-en">
+          <p>1. Set a monthly usage cap in Anthropic Console<br>2. Use Sonnet/Haiku daily, Opus only for deep analysis<br>3. Run <code>openclaw models scan</code> to compare model costs</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Q: <span class="lang-zh">AI 会记住我说过的话吗？</span><span class="lang-en">Does AI remember what I've said?</span></h4>
+        <div class="lang-zh">
+          <p>会。短期：当前会话内记住。长期：重要信息写入 <code>MEMORY.md</code> 和 <code>memory/</code> 目录，跨会话持久保留。</p>
+        </div>
+        <div class="lang-en">
+          <p>Yes. Short-term: within the current session. Long-term: important info is written to <code>MEMORY.md</code> and the <code>memory/</code> directory, persisting across sessions.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Q: <span class="lang-zh">电脑关机了，AI 还能工作吗？</span><span class="lang-en">Does AI keep working when my computer is off?</span></h4>
+        <div class="lang-zh"><p>不能。OpenClaw 运行在你的电脑上，关机后 Gateway 停止运行。如果需要 24/7 可用，考虑部署到 VPS（阿里云 / DigitalOcean 等）。</p></div>
+        <div class="lang-en"><p>No. OpenClaw runs on your machine — when it's off, the Gateway stops. For 24/7 availability, deploy to a VPS (Alibaba Cloud, DigitalOcean, etc.).</p></div>
+      </div>
+
+      <div class="card">
+        <h4>Q: <span class="lang-zh">国内访问 Claude API 需要代理吗？</span><span class="lang-en">Do I need a VPN to use Claude API in China?</span></h4>
+        <div class="lang-zh">
+          <p>是的，Claude API 在中国大陆需要代理。可以配置系统代理，但注意清除 Node.js 的代理环境变量（见踩坑记录坑 1）。</p>
+        </div>
+        <div class="lang-en">
+          <p>Yes, Claude API is blocked in mainland China. You need a VPN — but watch out for the proxy env var issue (see Pitfall #1).</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Q: <span class="lang-zh">遇到问题去哪里求助？</span><span class="lang-en">Where do I get help?</span></h4>
         <p>
-        📖 官方文档：<a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a><br>
-        💬 Discord 社区：<a href="https://discord.com/invite/clawd" target="_blank">discord.com/invite/clawd</a><br>
-        🛠 GitHub Issues：<a href="https://github.com/openclaw/openclaw" target="_blank">github.com/openclaw/openclaw</a><br>
-        🧩 技能市场：<a href="https://clawhub.com" target="_blank">clawhub.com</a>
+          📖 <a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a><br>
+          💬 <a href="https://discord.com/invite/clawd" target="_blank">Discord Community</a><br>
+          🛠 <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub Issues</a><br>
+          🧩 <a href="https://clawhub.com" target="_blank">ClaWHub Skills Market</a>
         </p>
       </div>
     </section>
 
-    <!-- 结语 -->
+    <!-- CLOSING -->
     <div class="hero" style="margin-top:3rem">
       <div class="hero-emoji">🎉</div>
-      <h1 style="font-size:1.8rem">你已经准备好了！</h1>
-      <p>现在你有了一个属于自己的 AI 助手，它运行在你的电脑上，了解你的习惯，可以帮你处理日常事务。接下来就是慢慢探索它能做什么。</p>
+      <h1 style="font-size:1.75rem">
+        <span class="lang-zh">你已经准备好了！</span>
+        <span class="lang-en">You're ready to go!</span>
+      </h1>
+      <p>
+        <span class="lang-zh">现在你有了一个属于自己的 AI 助手，运行在你的电脑上，了解你的习惯，帮你处理日常事务。接下来就是慢慢探索它能做什么。</span>
+        <span class="lang-en">You now have your own private AI assistant, running on your machine, learning your habits, handling your daily work. Now go explore what it can do.</span>
+      </p>
       <div class="hero-tags">
         <span class="tag">🦞 OpenClaw</span>
         <span class="tag">🤖 Claude</span>
         <span class="tag">🛠 Skills</span>
-        <span class="tag">💬 多渠道</span>
+        <span class="tag lang-zh">💬 多渠道</span>
+        <span class="tag lang-en">💬 Multi-channel</span>
       </div>
     </div>
 
@@ -1750,45 +1591,90 @@ openclaw gateway restart</code></pre>
 
 <!-- FOOTER -->
 <footer>
-  <p>OpenClaw 完全指南 · 由 AI 助手 Eris 编写 · 基于实际使用经验</p>
-  <p style="margin-top:0.5rem">
-    <a href="https://docs.openclaw.ai">官方文档</a> ·
+  <p>
+    <a href="https://docs.openclaw.ai">Docs</a> ·
     <a href="https://discord.com/invite/clawd">Discord</a> ·
-    <a href="https://clawhub.com">ClaWHub 技能市场</a> ·
+    <a href="https://clawhub.com">ClaWHub</a> ·
     <a href="https://github.com/openclaw/openclaw">GitHub</a>
   </p>
+  <div class="footer-by">
+    <span class="lang-zh">由 AI 助手 Eris 编写 · </span>
+    <span class="lang-en">Written by AI assistant Eris · </span>
+    <strong>Steve</strong> <span class="lang-zh">出品</span><span class="lang-en">production</span>
+  </div>
 </footer>
 
 <script>
-  // Progress bar
+  // ── Progress bar
   window.addEventListener('scroll', () => {
     const el = document.getElementById('progressBar');
-    const winScroll = document.documentElement.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    el.style.width = (winScroll / height * 100) + '%';
+    const h = document.documentElement;
+    el.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
   });
 
-  // Active TOC link
+  // ── Active TOC
   const sections = document.querySelectorAll('section[id]');
-  const links = document.querySelectorAll('aside a');
-  const observer = new IntersectionObserver((entries) => {
+  const links = document.querySelectorAll('aside a[href^="#"]');
+  new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         links.forEach(a => a.classList.remove('active'));
-        const active = document.querySelector(`aside a[href="#${e.target.id}"]`);
-        if (active) active.classList.add('active');
+        const a = document.querySelector(`aside a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
       }
     });
-  }, { rootMargin: '-60px 0px -70% 0px' });
-  sections.forEach(s => observer.observe(s));
-
-  // Copy button
-  function copyCode(btn) {
-    const code = btn.parentElement.querySelector('code').innerText;
-    navigator.clipboard.writeText(code).then(() => {
-      btn.textContent = '✓ 已复制';
-      setTimeout(() => btn.textContent = '复制', 2000);
+  }, { rootMargin: '-60px 0px -70% 0px' }).observe !== undefined &&
+  sections.forEach(s => new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        const a = document.querySelector(`aside a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
     });
+  }, { rootMargin: '-60px 0px -70% 0px' }).observe(s));
+
+  // ── Copy button
+  function copyCode(btn) {
+    const text = btn.parentElement.querySelector('code').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓';
+      setTimeout(() => btn.textContent = 'Copy', 1800);
+    });
+  }
+
+  // ── Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+
+  // ── Lang toggle
+  function toggleLang() {
+    const html = document.documentElement;
+    const isZh = html.getAttribute('data-lang') === 'zh';
+    const newLang = isZh ? 'en' : 'zh';
+    html.setAttribute('data-lang', newLang);
+    html.setAttribute('lang', isZh ? 'en' : 'zh-CN');
+    document.getElementById('langBtn').textContent = isZh ? '中文' : 'EN';
+    document.title = isZh ? 'OpenClaw Complete Guide' : 'OpenClaw 完全新手指南';
+    localStorage.setItem('lang', newLang);
+  }
+
+  // ── Restore preferences
+  const savedTheme = localStorage.getItem('theme');
+  const savedLang = localStorage.getItem('lang');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  }
+  if (savedLang) {
+    document.documentElement.setAttribute('data-lang', savedLang);
+    document.documentElement.setAttribute('lang', savedLang === 'zh' ? 'zh-CN' : 'en');
+    document.getElementById('langBtn').textContent = savedLang === 'zh' ? 'EN' : '中文';
   }
 </script>
 </body>
