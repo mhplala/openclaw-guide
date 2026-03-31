@@ -426,6 +426,8 @@
     <li><a href="#skills">安装技能</a></li>
     <li><a href="#usage">日常使用</a></li>
     <li><a href="#advanced">进阶配置</a></li>
+    <li><a href="#pitfalls">踩坑记录</a></li>
+    <li><a href="#tips">实战技巧</a></li>
     <li><a href="#faq">常见问题</a></li>
   </ul>
 </nav>
@@ -449,6 +451,8 @@
       <li><a href="#workspace">📁 工作区配置</a></li>
       <li><a href="#usage">💬 日常使用场景</a></li>
       <li><a href="#advanced">⚡ 进阶配置</a></li>
+      <li><a href="#pitfalls">💥 真实踩坑记录</a></li>
+      <li><a href="#tips">💡 实战小技巧</a></li>
       <li><a href="#faq">❓ 常见问题</a></li>
     </ul>
   </aside>
@@ -1362,6 +1366,302 @@ npm update -g openclaw
 # 或者
 openclaw gateway restart  # Gateway 会自动检查更新</code></pre>
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════ PITFALLS ═══════════════════════════════ -->
+    <section id="pitfalls">
+      <h2>💥 真实踩坑记录</h2>
+      <p>以下是实际使用中遇到的坑，很多初次部署都会中招，提前看完能省几小时。</p>
+
+      <div class="card" style="border-color: var(--danger); margin-bottom:1.25rem">
+        <h4 style="color:var(--danger)">🔴 坑 1：代理环境变量污染 Node.js（最常见！）</h4>
+        <p><strong>现象：</strong>AI 能启动，但 Claude API 调用一直报网络错误，或者内网服务莫名其妙被代理转发。</p>
+        <p><strong>根因：</strong>Mac 或 Linux 上设置了系统代理（Clash / V2Ray 等），Node.js 的 <code>fetch</code> 会自动走代理，但某些代理软件会拦截 API 调用。</p>
+        <p><strong>解法：</strong></p>
+        <div style="position:relative">
+          <pre><code># 启动 Gateway 前，先临时清除代理环境变量
+unset ALL_PROXY HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
+openclaw gateway restart
+
+# 或者写进启动脚本里，永久生效</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+        <p class="muted" style="font-size:0.85rem">💡 如果你想让 Claude API 走代理，在 <code>~/.openclaw/openclaw.json</code> 里单独配置代理地址，而不是依赖系统环境变量。</p>
+      </div>
+
+      <div class="card" style="border-color: var(--danger); margin-bottom:1.25rem">
+        <h4 style="color:var(--danger)">🔴 坑 2：大文件操作导致 AI 陷入死循环</h4>
+        <p><strong>现象：</strong>让 AI 写一个很长的文件，结果它一直在"思考"、发重复消息，甚至把整个文件内容塞进回复里刷屏。</p>
+        <p><strong>根因：</strong>AI 的 write 工具在写入超大文件（>5000字）时，会把内容塞进模型 token 输出，撑爆 context window，触发 compaction，然后 AI 重新启动重复执行。</p>
+        <p><strong>解法：大文件必须用 shell 写，不要用 AI 自带的 write 工具。</strong></p>
+        <div style="position:relative">
+          <pre><code># 正确做法：让 AI 通过 exec 用 shell 命令写文件
+cat > /path/to/bigfile.txt << 'EOF'
+...文件内容...
+EOF
+
+# 或者让 AI 分块写入
+# 错误做法：AI 直接 write 10000 字的文件 → 大概率出问题</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
+        <h4 style="color:var(--warn)">🟡 坑 3：Gateway restart 会断所有连接</h4>
+        <p><strong>现象：</strong>执行 <code>openclaw gateway restart</code> 后，Telegram/飞书 等频道的 AI 连接断开，几秒到几十秒内无法回复。</p>
+        <p><strong>解法：</strong>重启前先告诉 AI 让它通知你，等你做好心理准备再重启。重启后等 10-30 秒再发消息测试。</p>
+        <div class="alert warn" style="margin-top:0.5rem">
+          <span class="alert-icon">⚠️</span>
+          <p>如果你在进行重要对话，尽量避免在中途重启 Gateway。配置变更可以等对话结束后再重启。</p>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
+        <h4 style="color:var(--warn)">🟡 坑 4：Cron 任务写了≠真的在跑</h4>
+        <p><strong>现象：</strong>让 AI 帮你设置定时任务（比如每天 8 点发早报），AI 说"已设置"，但实际上到点什么都没发。</p>
+        <p><strong>根因：</strong>AI 可能只是写了配置文件，但没有验证 Gateway 是否真正加载了这个 cron。另外，cron 任务的输出默认回显到会话里，而不是发到 Telegram。</p>
+        <p><strong>解法：</strong></p>
+        <div style="position:relative">
+          <pre><code># 设置完 cron 后，先验证它真的在运行
+openclaw cron list
+
+# 手动触发一次测试
+openclaw cron run <任务ID>
+
+# 确认输出方向：是发到 Telegram 还是回显到当前会话？
+# 在任务里明确指定 delivery channel</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--warn); margin-bottom:1.25rem">
+        <h4 style="color:var(--warn)">🟡 坑 5：Cloudflare Tunnel 连不上（QUIC 被代理干扰）</h4>
+        <p><strong>现象：</strong>用 Cloudflare Tunnel 做内网穿透，连接一直失败或不稳定。</p>
+        <p><strong>根因：</strong>Mac 上的系统代理会干扰 QUIC 协议，而 <code>cloudflared</code> 默认用 QUIC。</p>
+        <p><strong>解法：强制用 HTTP/2，同时清空代理环境变量。</strong></p>
+        <div style="position:relative">
+          <pre><code># 启动 cloudflared 时加参数
+cloudflared tunnel --protocol http2 run
+
+# 如果用 launchd / systemd 启动，在服务配置里加环境变量
+EnvironmentVariables:
+  ALL_PROXY: ""
+  HTTPS_PROXY: ""</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
+        <h4 style="color:var(--accent)">🟣 坑 6：AI 心跳深夜骚扰</h4>
+        <p><strong>现象：</strong>凌晨 2 点收到 AI 发来的天气通知……</p>
+        <p><strong>根因：</strong>Heartbeat 心跳任务没有配置时间限制，半夜也在检查然后"善意提醒"你。</p>
+        <p><strong>解法：在 <code>HEARTBEAT.md</code> 里明确写静默时段。</strong></p>
+        <div style="position:relative">
+          <pre><code># 在 HEARTBEAT.md 里加这一条：
+## 静默规则
+深夜 23:00 - 早上 08:00，无论发现什么，都不发消息。
+只有极端紧急（系统崩溃、安全警报）才可以例外。</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
+        <h4 style="color:var(--accent)">🟣 坑 7：GitHub Pages 推上去没更新（CDN 缓存）</h4>
+        <p><strong>现象：</strong>已经 git push 了，但浏览器打开还是旧版本。</p>
+        <p><strong>原因：</strong>GitHub Pages 用 CDN 缓存，更新可能有 1-5 分钟延迟，浏览器本地也有缓存。</p>
+        <p><strong>解法：</strong></p>
+        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem">
+          <li>强制刷新：Mac 上按 <kbd>Cmd + Shift + R</kbd>，Windows 按 <kbd>Ctrl + Shift + R</kbd></li>
+          <li>等 2-5 分钟后再刷，CDN 缓存通常会自动更新</li>
+          <li>也可以开无痕窗口访问，排除本地缓存</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color: var(--accent); margin-bottom:1.25rem">
+        <h4 style="color:var(--accent)">🟣 坑 8：飞书渠道发文件用错方法</h4>
+        <p><strong>现象：</strong>让 AI 把文件发到飞书，收到的只是一个文件路径字符串，不是真正的文件。</p>
+        <p><strong>根因：</strong>OpenClaw 的 message 工具的 filePath 参数在飞书渠道不生效，它只会把路径当文本发出去。</p>
+        <p><strong>解法：</strong>需要让 AI 调用飞书原生 API 上传文件，流程是：先 <code>POST /im/v1/files</code> 上传获取 file_key，再通过消息接口发送。这个问题只在飞书渠道存在，Telegram 正常。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1.25rem">
+        <h4>⚪ 坑 9：context 越来越长，AI 变慢变贵</h4>
+        <p><strong>现象：</strong>和 AI 聊了几天后，它的回复越来越慢，API 费用也开始增加。</p>
+        <p><strong>原因：</strong>每次对话都会携带历史上下文，时间长了 context window 越来越大，每次调用的 token 消耗也越来越多。</p>
+        <p><strong>解法：</strong></p>
+        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem">
+          <li>OpenClaw 默认开启 context pruning（自动修剪），不用手动管理</li>
+          <li>长任务（处理大文档、批量操作）用子进程处理，不在主对话里堆积</li>
+          <li>定期重新开一个对话，而不是在一个对话里聊几十条</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════ TIPS ═══════════════════════════════ -->
+    <section id="tips">
+      <h2>💡 实战小技巧</h2>
+      <p>这些是用了一段时间后慢慢总结出来的使用心法，能让你的体验好很多。</p>
+
+      <h3>🗣 怎么和 AI 说话更高效</h3>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>直接说结果，不要说步骤</h4>
+        <p>❌ 「先打开邮件，然后找一下今天的邮件，然后把重要的列出来」</p>
+        <p>✅ 「帮我看今天有没有重要邮件，总结一下」</p>
+        <p class="muted" style="font-size:0.85rem">AI 会自己决定怎么做，你只需要告诉它你想要什么结果。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>危险操作可以让 AI 先列计划</h4>
+        <p>对于删文件、发消息、修改配置这类操作，可以先说：</p>
+        <p>「先告诉我你打算怎么做，别直接执行」</p>
+        <p>AI 会先给你一个计划，你确认后再让它执行，避免误操作。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>让 AI 记住你的偏好</h4>
+        <p>直接说「记住：我不喜欢 xxx」或「以后帮我做 xxx 的时候，记得 yyy」，AI 会把重要偏好写进记忆文件，下次对话继续有效。</p>
+        <p class="muted" style="font-size:0.85rem">比如：「记住我用的是上海证券账户，以后查股票默认用这个」</p>
+      </div>
+
+      <h3>⚙️ 配置技巧</h3>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>善用 SOUL.md 定义 AI 的边界</h4>
+        <p>不想让 AI 主动推送某类信息？不想它深夜打扰你？这些都可以写进 <code>SOUL.md</code> 或 <code>AGENTS.md</code>：</p>
+        <div style="position:relative">
+          <pre><code># 在 AGENTS.md 里写：
+
+## 禁止主动推送
+- 不要主动推荐任何产品或功能
+- 不要在没有被问到的情况下评价我的决定
+- 不要深夜（23:00-08:00）发消息，哪怕有定时任务触发</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>不同任务用不同模型</h4>
+        <p>你可以在对话中临时切换模型，不需要改配置文件：</p>
+        <div style="position:relative">
+          <pre><code># 在聊天里直接发这个来临时切换（部分渠道支持）
+/model claude-opus-4-6
+
+# 或者告诉 AI：
+「这个任务用 Opus 做，要深度分析」
+「这个用 Haiku 就行，快速回答」</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+        <p class="muted" style="font-size:0.85rem">💡 日常聊天用 Sonnet，写研究报告/复杂推理用 Opus，批量简单任务用 Haiku。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>用 Heartbeat 做轻量级监控</h4>
+        <p>心跳检查不只是"没事汇报"，可以用来做有意义的监控：</p>
+        <div style="position:relative">
+          <pre><code># HEARTBEAT.md 示例 — 有价值的检查
+## 每次心跳（每小时）：
+1. 检查磁盘空间，如果不足 10GB，提醒我
+2. 检查 Gateway 日志，如果有 ERROR 级别日志，告诉我
+3. 检查天气，如果接下来 3 小时要下雨，提醒我带伞
+
+## 每天 8:30：
+- 今日日程 + 未完成的提醒事项
+
+## 每周一 9:00：
+- 上周的 AI 使用统计（粗略估算）</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>定期让 AI 整理记忆</h4>
+        <p>时间长了，<code>memory/</code> 目录下会积累大量日记文件。可以定期让 AI 做一次"记忆整理"：</p>
+        <p>「帮我整理一下最近 2 周的记忆日记，把重要的事情提炼到 MEMORY.md 里，删掉过时的内容」</p>
+        <p class="muted" style="font-size:0.85rem">这样 AI 的"长期记忆"会越来越精准，而不是一堆流水账。</p>
+      </div>
+
+      <h3>🛡 安全与隐私</h3>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>设置白名单，防止陌生人使用你的 AI</h4>
+        <p>Telegram Bot 默认公开，任何知道 Bot 用户名的人都能和它说话。强烈建议配置白名单：</p>
+        <div style="position:relative">
+          <pre><code># 先获取你自己的 Telegram ID（发消息给 @userinfobot）
+# 然后设置白名单，只允许你自己
+openclaw config set channels.telegram.allowedUsers '["你的数字ID"]'
+
+# 多人共用（比如家庭）
+openclaw config set channels.telegram.allowedUsers '["ID1","ID2"]'</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>不要让 AI 处理真正敏感的内容</h4>
+        <p>AI 的对话内容会发送到 Claude 的 API 服务器（Anthropic）。虽然 Anthropic 有隐私保护，但对于银行密码、身份证号、医疗记录这类信息，建议直接本地处理，不要让 AI 经手。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>群聊里的 AI 要设置触发条件</h4>
+        <p>如果把 AI 接入群聊（Discord / 飞书群等），默认它可能会回复每一条消息，影响群聊氛围。</p>
+        <p>建议配置为：只在 <strong>@提及</strong> 或 <strong>包含问句/关键词</strong> 时才回复，其余时候保持静默。</p>
+        <div style="position:relative">
+          <pre><code># 在 AGENTS.md 里写：
+## 群聊行为规则
+- 只在被 @ 或有人直接提问时回复
+- 闲聊、表情包、纯分享内容：不回复
+- 别人已经回答了的问题：不重复回答
+- 不要主动插话，除非你能提供其他人没有的信息</code></pre>
+          <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        </div>
+      </div>
+
+      <h3>🚀 进阶玩法</h3>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>让 AI 自己写技能（Skills）</h4>
+        <p>如果你有特殊需求，可以直接让 AI 帮你写一个自定义技能：</p>
+        <p>「帮我创建一个技能，能查询京东快递物流信息，只需要传入单号」</p>
+        <p>AI 会生成 <code>SKILL.md</code> 和相关脚本，放到技能目录后立即生效。</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>多 Agent 分工</h4>
+        <p>你可以配置多个 AI 实例，各司其职：</p>
+        <div class="card-grid" style="margin:0.75rem 0 0">
+          <div class="card" style="margin:0; padding:1rem">
+            <h4 style="font-size:0.9rem; color:var(--accent2)">主助手（Telegram）</h4>
+            <p>日常对话、文件处理、代码帮助</p>
+          </div>
+          <div class="card" style="margin:0; padding:1rem">
+            <h4 style="font-size:0.9rem; color:var(--accent2)">工作助手（飞书）</h4>
+            <p>处理工作文档、飞书通知、会议纪要</p>
+          </div>
+          <div class="card" style="margin:0; padding:1rem">
+            <h4 style="font-size:0.9rem; color:var(--accent2)">群聊机器人（Discord）</h4>
+            <p>回答公开问题、提供信息查询</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h4>用子进程处理重活</h4>
+        <p>遇到需要很长时间的任务（写几千行代码、处理大量数据、深度研究），可以让 AI 启动一个子进程在后台处理：</p>
+        <p>「这个任务可能要跑很久，帮我在后台处理，完成后通知我结果」</p>
+        <p class="muted" style="font-size:0.85rem">这样主对话不会被卡住，你可以继续做其他事情。</p>
+      </div>
+
+      <div class="card">
+        <h4>建立你自己的使用习惯</h4>
+        <p>最后也是最重要的一点：OpenClaw 是高度可定制的，最终使用效果取决于你怎么"培养"它。</p>
+        <ul style="padding-left:1.5rem; color:var(--text-dim); font-size:0.9rem; margin-top:0.5rem">
+          <li>遇到 AI 表现不好的地方，直接说「这个不对，下次应该 xxx」，AI 会记住</li>
+          <li>定期更新 <code>SOUL.md</code> 和 <code>USER.md</code>，让 AI 更了解你</li>
+          <li>把你的工作流程告诉 AI，它会帮你自动化重复的部分</li>
+          <li>发现好的技能就安装，用不到的技能就移除，保持轻量</li>
+        </ul>
       </div>
     </section>
 
